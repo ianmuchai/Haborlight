@@ -1,14 +1,22 @@
-﻿import React, { useMemo, useState } from 'react';
+﻿import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
+  Activity,
   ArrowRight,
+  Bell,
+  BookOpen,
   CalendarClock,
   Check,
-  ChevronDown,
+  ChevronRight,
   ClipboardCheck,
   CreditCard,
+  FileText,
   HeartHandshake,
+  Home,
   LayoutDashboard,
+  LifeBuoy,
+  Lock,
+  LogOut,
   Menu,
   MessageCircle,
   Mic,
@@ -17,6 +25,7 @@ import {
   ShieldCheck,
   Smartphone,
   Stethoscope,
+  Target,
   Users,
   Video,
   WalletCards,
@@ -25,379 +34,312 @@ import {
 } from 'lucide-react';
 import './styles.css';
 
+const routes = [
+  { id: 'home', label: 'Home', icon: Home },
+  { id: 'programs', label: 'Programs', icon: ClipboardCheck },
+  { id: 'telehealth', label: 'Telehealth', icon: Video },
+  { id: 'resources', label: 'Resources', icon: BookOpen },
+  { id: 'support', label: 'Support', icon: LifeBuoy },
+  { id: 'login', label: 'Login', icon: Lock }
+];
+
+const demoAccounts = [
+  { role: 'patient', label: 'Patient', email: 'patient@harborlight.test', password: 'Patient2026!', name: 'Amina Wanjiku' },
+  { role: 'clinician', label: 'Clinician', email: 'clinician@harborlight.test', password: 'Clinician2026!', name: 'Dr. Kamau Otieno' },
+  { role: 'admin', label: 'Admin', email: 'admin@harborlight.test', password: 'Admin2026!', name: 'Mercy Njeri' }
+];
+
 const programs = [
-  {
-    code: 'PHP',
-    title: 'PHP / Day Treatment',
-    intensity: '25-30 hrs / week',
-    fit: 'High structure after detox, relapse risk, or a recent step-down.',
-    support: ['Daily schedule template', 'Attendance tracking', 'Family coordination']
-  },
-  {
-    code: 'IOP',
-    title: 'Intensive Outpatient',
-    intensity: '3 hrs / day, 4 days',
-    fit: 'Structured care while keeping work, school, and family routines.',
-    support: ['Group and individual sessions', 'Morning or evening options', 'Missed-session follow-up']
-  },
-  {
-    code: 'OP',
-    title: 'Outpatient Program',
-    intensity: 'Often 90 min / week',
-    fit: 'Continued recovery support, accountability, and care planning.',
-    support: ['Weekly therapy', 'Recovery goals', 'Resource referrals']
-  },
-  {
-    code: 'VIOP',
-    title: 'Virtual IOP',
-    intensity: 'Mobile browser access',
-    fit: 'Remote support with a real program structure and live care team.',
-    support: ['Waiting room', 'Readiness checks', 'Low-bandwidth guidance']
-  }
+  { code: 'PHP', title: 'PHP / Day Treatment', intensity: '25-30 hrs weekly', fit: 'High structure, step-down support, relapse risk monitoring.', detail: 'Daily treatment schedule, attendance capture, family coordination, and transition planning.' },
+  { code: 'IOP', title: 'Intensive Outpatient', intensity: '3 hrs daily, 4 days', fit: 'Structured care while maintaining work, school, or family life.', detail: 'Group therapy, individual sessions, reminders, assignments, and recovery goals.' },
+  { code: 'OP', title: 'Outpatient Program', intensity: 'Usually 90 min weekly', fit: 'Continued recovery support and longer-term accountability.', detail: 'Weekly check-ins, relapse prevention planning, resources, and aftercare support.' },
+  { code: 'VIOP', title: 'Virtual IOP', intensity: 'Mobile browser access', fit: 'Remote participation with a real program structure.', detail: 'Waiting room, readiness checks, secure links, group rosters, and low-bandwidth help.' }
 ];
 
-const journey = [
-  ['Reach out', 'Submit a private request with contact and consent preferences.'],
-  ['Complete intake', 'Share program interest, location, device access, and care needs.'],
-  ['Match to care', 'A coordinator routes you to PHP, IOP, OP, Virtual IOP, or family support.'],
-  ['Begin sessions', 'Join telehealth or in-person sessions with reminders and readiness checks.'],
-  ['Stay connected', 'Track goals, check-ins, payments, messages, and aftercare steps.']
+const publicTools = [
+  ['Confidential Intake', 'Capture needs, county, phone, consent, device access, preferred time, and M-Pesa payer details.', ClipboardCheck],
+  ['Care Matching', 'Route patients to PHP, IOP, OP, Virtual IOP, family support, or urgent follow-up.', Target],
+  ['Telehealth Access', 'Session links, waiting room, readiness checks, reconnect guidance, and attendance markers.', Video],
+  ['Recovery Tools', 'Mood, craving, sleep, goals, worksheets, journaling, relapse planning, and resources.', Activity],
+  ['Messaging', 'Consent-aware SMS and WhatsApp reminders that route back to secure portal views.', MessageCircle],
+  ['Payments', 'M-Pesa payment status, receipts, balances, deposits, and reconciliation workflows.', WalletCards]
 ];
 
-const portalTabs = {
-  patient: {
-    label: 'Patient',
-    title: 'Today in your recovery plan',
-    items: [
-      ['Next session', 'Virtual IOP group, 18:00 EAT', 'Join opens in 22 min'],
-      ['Daily check-in', 'Mood steady, craving moderate', 'Safety prompt available'],
-      ['Recovery tasks', 'CBT worksheet and relapse plan', '2 items due'],
-      ['Payments', 'KES 4,500 outstanding', 'M-Pesa request pending']
-    ]
-  },
-  therapist: {
-    label: 'Therapist',
-    title: 'Clinical session console',
-    items: [
-      ['Waiting room', '3 patients ready, 1 reconnecting', 'Admit controls'],
-      ['Risk context', 'Elevated craving flag yesterday', 'Review before session'],
-      ['Attendance', 'Present, late, no-show, technical issue', 'Capture in session'],
-      ['Notes', 'Progress note draft queue', '2 notes pending']
-    ]
-  },
-  admin: {
-    label: 'Admin',
-    title: 'Operations command center',
-    items: [
-      ['Intake queue', '8 new requests, 3 urgent callbacks', 'Assign follow-up'],
-      ['Enrollment', 'Program, schedule, therapist, payer', 'Ready for review'],
-      ['Messaging consent', 'SMS and WhatsApp preferences', 'Audit-ready'],
-      ['Payment review', '6 receipts, 2 reconciliation checks', 'M-Pesa queue']
-    ]
-  }
-};
-
-const payments = [
-  ['Deposit request', 'KES 2,000', 'STK Push prepared', 'Pending'],
-  ['Virtual IOP week 1', 'KES 12,500', 'Receipt issued', 'Paid'],
-  ['Family session', 'KES 3,500', 'Awaiting confirmation', 'Review']
+const resourceLibrary = [
+  ['Before a session', 'Check battery, data bundle, privacy, headphones, and a calm location.'],
+  ['Craving plan', 'Name the trigger, delay 10 minutes, contact support, move location, use grounding.'],
+  ['Family guide', 'Use non-blaming language, keep boundaries clear, support treatment attendance.'],
+  ['Low bandwidth tips', 'Close background apps, switch to audio if needed, reconnect from the portal.'],
+  ['Aftercare checklist', 'Appointments, medication support, peer groups, work plan, emergency contacts.'],
+  ['Privacy basics', 'Use personal devices where possible and avoid sharing sensitive information by SMS.']
 ];
 
-const faqs = [
-  ['Can someone join from a phone?', 'Yes. The experience is designed around smartphone browsers, with readiness checks for camera, microphone, browser, and connection quality.'],
-  ['What will WhatsApp or SMS messages say?', 'Messages should stay minimal and non-sensitive, such as a reminder to sign in to the portal or contact the care team.'],
-  ['Is M-Pesa part of the MVP?', 'Yes. The product foundation includes STK Push or Lipa na M-Pesa initiation, payment status, receipts, balances, and reconciliation review.'],
-  ['Is this an emergency service?', 'No. The product must include clear emergency guidance and direct people to local urgent or emergency care when there is immediate danger.']
+const patientCards = [
+  ['Next session', 'Virtual IOP group at 18:00 EAT', 'Join waiting room', Video],
+  ['Daily check-in', 'Mood, cravings, sleep, stress, and safety prompt', 'Complete check-in', Activity],
+  ['Recovery plan', '3 active goals, 2 worksheets, relapse plan draft', 'Review tasks', Target],
+  ['Payments', 'KES 4,500 balance, receipt history available', 'View payments', CreditCard]
 ];
 
-const counties = ['Nairobi', 'Mombasa', 'Kiambu', 'Nakuru', 'Kisumu', 'Uasin Gishu', 'Machakos', 'Other / not sure'];
+const clinicianCards = [
+  ['Waiting room', '3 ready, 1 reconnecting, 7 expected', 'Admit patients', Users],
+  ['Risk flags', '2 elevated cravings, 1 missed check-in', 'Review context', Activity],
+  ['Documentation', '2 progress notes and 1 group note pending', 'Open notes', FileText],
+  ['Follow-up queue', 'No-shows, referrals, family consent, care tasks', 'Assign tasks', Bell]
+];
+
+const adminCards = [
+  ['Intake queue', '8 new requests, 3 priority callbacks', 'Assign follow-up', ClipboardCheck],
+  ['Program scheduling', 'PHP, IOP, OP, Virtual IOP capacity', 'Manage calendar', CalendarClock],
+  ['Payment review', '6 receipts, 2 reconciliation checks', 'Open queue', ReceiptText],
+  ['Audit and consent', 'Messaging, family access, payment permissions', 'Review logs', ShieldCheck]
+];
+
+function getInitialPage() {
+  const page = window.location.hash.replace('#/', '') || 'home';
+  return routes.some((route) => route.id === page) ? page : 'home';
+}
 
 function App() {
-  const [intakeOpen, setIntakeOpen] = useState(false);
-  const [portalOpen, setPortalOpen] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [faqOpen, setFaqOpen] = useState(0);
-  const [portalTab, setPortalTab] = useState('patient');
+  const [page, setPage] = useState(getInitialPage);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [session, setSession] = useState(() => JSON.parse(localStorage.getItem('harborlight-session') || 'null'));
 
-  const selectedPortal = portalTabs[portalTab];
-  const openIntake = () => {
-    setSubmitted(false);
-    setIntakeOpen(true);
+  useEffect(() => {
+    const syncHash = () => setPage(getInitialPage());
+    window.addEventListener('hashchange', syncHash);
+    return () => window.removeEventListener('hashchange', syncHash);
+  }, []);
+
+  const navigate = (nextPage) => {
+    window.location.hash = `/${nextPage}`;
+    setPage(nextPage);
+    setMenuOpen(false);
   };
 
-  const nowLabel = useMemo(() => 'East Africa Time', []);
+  const login = (account) => {
+    localStorage.setItem('harborlight-session', JSON.stringify(account));
+    setSession(account);
+    navigate('portal');
+  };
+
+  const logout = () => {
+    localStorage.removeItem('harborlight-session');
+    setSession(null);
+    navigate('login');
+  };
+
+  const activeRoute = page === 'portal' ? 'login' : page;
 
   return (
     <div className="app-shell">
-      <header className="site-header">
-        <a className="brand" href="#top" aria-label="Harborlight Recovery home">
+      <header className="site-header app-header">
+        <button className="brand brand-button" onClick={() => navigate('home')} aria-label="Harborlight home">
           <span className="brand-mark"><HeartHandshake size={18} /></span>
           <span>Harborlight</span>
-        </a>
-        <nav className="desktop-nav" aria-label="Main navigation">
-          <a href="#programs">Programs</a>
-          <a href="#telehealth">Telehealth</a>
-          <a href="#portal">Portal</a>
-          <a href="#payments">M-Pesa</a>
-          <a href="#faq">FAQ</a>
+        </button>
+        <nav className="desktop-nav page-nav" aria-label="Primary navigation">
+          {routes.map((route) => <button key={route.id} className={activeRoute === route.id ? 'active' : ''} onClick={() => navigate(route.id)}>{route.label}</button>)}
         </nav>
         <div className="header-actions">
-          <button className="text-button" onClick={() => setPortalOpen(true)}>Portal sign in</button>
-          <button className="header-cta" onClick={openIntake}>Get help <ArrowRight size={16} /></button>
-          <button className="menu-button" aria-label="Open menu"><Menu size={22} /></button>
+          {session ? <button className="text-button" onClick={() => navigate('portal')}>Dashboard</button> : <button className="text-button" onClick={() => navigate('login')}>Sign in</button>}
+          <button className="header-cta" onClick={() => navigate('support')}>Get help <ArrowRight size={16} /></button>
+          <button className="menu-button" onClick={() => setMenuOpen(true)} aria-label="Open menu"><Menu size={22} /></button>
         </div>
       </header>
 
-      <main id="top">
-        <section className="hero-section">
-          <div className="hero-copy reveal">
-            <p className="eyebrow"><span /> Kenya-ready opioid rehabilitation platform</p>
-            <h1>Private treatment access from first call to recovery follow-up.</h1>
-            <p className="hero-lede">A mobile-first care experience for opioid rehabilitation, outpatient treatment, telehealth sessions, WhatsApp/SMS reminders, and M-Pesa payment management.</p>
-            <div className="hero-actions">
-              <button className="primary-button" onClick={openIntake}>Start confidential intake <ArrowRight size={18} /></button>
-              <button className="secondary-button" onClick={() => setPortalOpen(true)}>View portal preview</button>
-            </div>
-            <div className="trust-row">
-              <span><ShieldCheck size={16} /> Consent-aware</span>
-              <span><Smartphone size={16} /> Smartphone-first</span>
-              <span><Wifi size={16} /> Low-bandwidth guidance</span>
-            </div>
-          </div>
+      {menuOpen && <MobileMenu page={activeRoute} navigate={navigate} close={() => setMenuOpen(false)} />}
 
-          <div className="hero-product reveal delay-one" aria-label="Platform snapshot">
-            <div className="phone-shell">
-              <div className="phone-top"><span /> <strong>Patient Portal</strong> <Video size={16} /></div>
-              <div className="session-card live">
-                <small>Next session</small>
-                <h3>Virtual IOP Group</h3>
-                <p>Starts 18:00 EAT. Readiness check is available.</p>
-                <button>Join waiting room</button>
-              </div>
-              <div className="mini-grid">
-                <div><ClipboardCheck size={18} /><strong>Check-in</strong><span>Due today</span></div>
-                <div><MessageCircle size={18} /><strong>Messages</strong><span>2 secure alerts</span></div>
-              </div>
-              <div className="payment-chip"><WalletCards size={17} /> KES 4,500 balance <span>Pay with M-Pesa</span></div>
-            </div>
-            <div className="care-card">
-              <span className="pulse-dot" /> Care coordinator online
-              <small>{nowLabel} / privacy-conscious outreach</small>
-            </div>
-          </div>
-        </section>
-
-        <section className="metrics-strip" aria-label="MVP pillars">
-          <div><strong>6</strong><span>Role-based workspaces</span></div>
-          <div><strong>4</strong><span>Care levels supported</span></div>
-          <div><strong>3</strong><span>Communication channels</span></div>
-          <div><strong>KES</strong><span>M-Pesa-ready billing</span></div>
-        </section>
-
-        <section className="program-section" id="programs">
-          <div className="section-heading">
-            <p className="section-kicker">Program model</p>
-            <h2>Care levels that explain fit, intensity, and next steps.</h2>
-            <p>The public site should reduce uncertainty for patients, families, and working adults before they ever open the intake form.</p>
-          </div>
-          <div className="program-grid">
-            {programs.map((program) => (
-              <article className="program-card" key={program.code}>
-                <div className="program-code">{program.code}</div>
-                <h3>{program.title}</h3>
-                <p className="intensity">{program.intensity}</p>
-                <p>{program.fit}</p>
-                <ul>
-                  {program.support.map((item) => <li key={item}><Check size={14} /> {item}</li>)}
-                </ul>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="journey-section" id="care">
-          <div className="section-heading compact">
-            <p className="section-kicker">How it works</p>
-            <h2>A calm path from request to enrollment.</h2>
-          </div>
-          <div className="journey-list">
-            {journey.map(([title, detail], index) => (
-              <div className="journey-item" key={title}>
-                <span>{String(index + 1).padStart(2, '0')}</span>
-                <strong>{title}</strong>
-                <p>{detail}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="telehealth-section" id="telehealth">
-          <div className="telehealth-copy">
-            <p className="section-kicker">Telehealth MVP</p>
-            <h2>Waiting room, readiness check, group access, and session documentation.</h2>
-            <p>Telehealth is treated as a core MVP capability, with patient and therapist surfaces that support mobile access, attendance, low-bandwidth moments, and clinical follow-up.</p>
-          </div>
-          <div className="console-panel">
-            <div className="console-header"><Video size={18} /> Live session console <span>18:00 EAT</span></div>
-            <div className="readiness-grid">
-              <div><Mic size={18} /><strong>Microphone</strong><span>Ready</span></div>
-              <div><Video size={18} /><strong>Camera</strong><span>Ready</span></div>
-              <div><Wifi size={18} /><strong>Connection</strong><span>Limited, stable</span></div>
-              <div><Users size={18} /><strong>Roster</strong><span>7 expected</span></div>
-            </div>
-            <div className="waiting-room">
-              <strong>Waiting room</strong>
-              <p>3 participants waiting. 1 participant needs reconnection guidance.</p>
-              <button>Admit selected</button>
-            </div>
-          </div>
-        </section>
-
-        <section className="portal-section" id="portal">
-          <div className="section-heading">
-            <p className="section-kicker">Signed-in experience</p>
-            <h2>Role-based workspaces for care, operations, and accountability.</h2>
-            <p>Preview tabs show the platform behavior planned for patients, therapists, recovery specialists, facilitators, and administrators.</p>
-          </div>
-          <div className="portal-tabs" role="tablist" aria-label="Portal preview tabs">
-            {Object.entries(portalTabs).map(([key, tab]) => (
-              <button className={portalTab === key ? 'active' : ''} key={key} onClick={() => setPortalTab(key)} role="tab" aria-selected={portalTab === key}>{tab.label}</button>
-            ))}
-          </div>
-          <div className="portal-preview">
-            <aside>
-              <LayoutDashboard size={20} />
-              <h3>{selectedPortal.title}</h3>
-              <p>Private portal state, shown as a front-end preview until backend services are connected.</p>
-            </aside>
-            <div className="portal-list">
-              {selectedPortal.items.map(([title, detail, action]) => (
-                <div className="portal-row" key={title}>
-                  <div><strong>{title}</strong><span>{detail}</span></div>
-                  <button>{action}</button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="payments-section" id="payments">
-          <div>
-            <p className="section-kicker">M-Pesa management</p>
-            <h2>Payment status without exposing sensitive clinical details.</h2>
-            <p>Patients can see balances and receipts in the portal. External reminders should use careful, minimal wording and route people back to secure views.</p>
-          </div>
-          <div className="payment-table" aria-label="Payment status preview">
-            {payments.map(([name, amount, detail, status]) => (
-              <div className="payment-row" key={name}>
-                <ReceiptText size={18} />
-                <div><strong>{name}</strong><span>{detail}</span></div>
-                <b>{amount}</b>
-                <em>{status}</em>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="communication-section">
-          <div className="comm-card"><Phone size={22} /><strong>SMS</strong><span>Short fallback reminders and check-in prompts.</span></div>
-          <div className="comm-card accent"><MessageCircle size={22} /><strong>WhatsApp</strong><span>Consent-based reminders with secure portal links.</span></div>
-          <div className="comm-card"><CreditCard size={22} /><strong>M-Pesa</strong><span>STK Push, receipts, balances, and reconciliation queue.</span></div>
-        </section>
-
-        <section className="faq-section" id="faq">
-          <p className="section-kicker">Frequently asked</p>
-          <h2>Questions the MVP should answer early.</h2>
-          <div className="faq-list">
-            {faqs.map(([question, answer], index) => (
-              <div className={`faq-item ${faqOpen === index ? 'open' : ''}`} key={question}>
-                <button onClick={() => setFaqOpen(faqOpen === index ? -1 : index)}><span>{question}</span><ChevronDown size={19} /></button>
-                {faqOpen === index && <p>{answer}</p>}
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="closing-section">
-          <div>
-            <p className="section-kicker">Next step</p>
-            <h2>Start with a confidential request.</h2>
-            <p>This front-end now represents the MVP direction: public education, richer intake, telehealth, portal workspaces, messaging consent, and M-Pesa readiness.</p>
-          </div>
-          <button className="primary-button light-button" onClick={openIntake}>Open intake <ArrowRight size={18} /></button>
-        </section>
+      <main className="page-shell">
+        {page === 'home' && <HomePage navigate={navigate} session={session} />}
+        {page === 'programs' && <ProgramsPage navigate={navigate} />}
+        {page === 'telehealth' && <TelehealthPage navigate={navigate} />}
+        {page === 'resources' && <ResourcesPage navigate={navigate} />}
+        {page === 'support' && <SupportPage navigate={navigate} />}
+        {page === 'login' && <LoginPage login={login} session={session} navigate={navigate} />}
+        {page === 'portal' && <PortalPage session={session} navigate={navigate} logout={logout} />}
       </main>
 
       <footer className="site-footer">
         <div className="brand footer-brand"><span className="brand-mark"><HeartHandshake size={18} /></span><span>Harborlight</span></div>
-        <p>Mobile-first opioid rehabilitation and outpatient treatment platform.</p>
+        <p>Mobile-first opioid rehabilitation, telehealth, recovery engagement, and M-Pesa workflows.</p>
         <span>Kenya / EAT</span>
       </footer>
-
-      {intakeOpen && (
-        <div className="modal-backdrop" role="presentation">
-          <div className="modal intake-modal" role="dialog" aria-modal="true" aria-labelledby="intake-title">
-            <button className="modal-close" onClick={() => setIntakeOpen(false)} aria-label="Close intake form"><X size={20} /></button>
-            {submitted ? (
-              <div className="success-state">
-                <span className="success-icon"><Check size={26} /></span>
-                <p className="section-kicker">Request received</p>
-                <h2>Thank you for reaching out.</h2>
-                <p>Your request is private. A care coordinator can follow up through your preferred contact method. This prototype does not send data yet.</p>
-                <button className="primary-button" onClick={() => setIntakeOpen(false)}>Close <ArrowRight size={17} /></button>
-              </div>
-            ) : (
-              <>
-                <p className="section-kicker">Confidential intake</p>
-                <h2 id="intake-title">Tell us what would help.</h2>
-                <p className="modal-intro">This MVP intake captures care routing, Kenya localization, communication consent, device readiness, and optional M-Pesa payer details.</p>
-                <form onSubmit={(event) => { event.preventDefault(); setSubmitted(true); }}>
-                  <div className="form-grid">
-                    <label>First name<input required placeholder="First name" /></label>
-                    <label>Last name<input required placeholder="Last name" /></label>
-                    <label>Email<input type="email" placeholder="you@example.com" /></label>
-                    <label>Mobile phone<input required type="tel" placeholder="+2547XXXXXXXX" pattern="(\+254|0)?7[0-9]{8}" /></label>
-                    <label>WhatsApp number<input type="tel" placeholder="Same or another number" /></label>
-                    <label>County / region<select defaultValue=""><option value="" disabled>Select county</option>{counties.map((county) => <option key={county}>{county}</option>)}</select></label>
-                    <label>Program interest<select defaultValue=""><option value="" disabled>Select one</option><option>PHP / Day Treatment</option><option>IOP</option><option>Outpatient</option><option>Virtual IOP</option><option>Opioid rehabilitation</option><option>Family support</option><option>Not sure yet</option></select></label>
-                    <label>Care preference<select defaultValue=""><option value="" disabled>Select one</option><option>Virtual</option><option>In person</option><option>Hybrid</option><option>Not sure</option></select></label>
-                    <label>Preferred contact<select defaultValue=""><option value="" disabled>Select one</option><option>Phone</option><option>SMS</option><option>WhatsApp</option><option>Email</option><option>No preference</option></select></label>
-                    <label>Preferred time<select defaultValue=""><option value="" disabled>Select one</option><option>Morning</option><option>Afternoon</option><option>Evening</option><option>Flexible</option></select></label>
-                    <label>Internet access<select defaultValue=""><option value="" disabled>Select one</option><option>Good</option><option>Limited</option><option>Unstable</option><option>Not sure</option></select></label>
-                    <label>Device access<select defaultValue=""><option value="" disabled>Select one</option><option>Smartphone</option><option>Tablet</option><option>Laptop</option><option>Shared device</option></select></label>
-                    <label className="wide">M-Pesa phone for payment<input type="tel" placeholder="Optional payment number" /></label>
-                    <label className="wide">What is happening right now?<textarea placeholder="Optional. Share only what you are comfortable sharing." /></label>
-                  </div>
-                  <label className="checkbox-label"><input required type="checkbox" /> <span>I consent to be contacted about care options.</span></label>
-                  <label className="checkbox-label"><input type="checkbox" /> <span>I consent to non-sensitive SMS or WhatsApp reminders and follow-up messages.</span></label>
-                  <label className="checkbox-label"><input type="checkbox" /> <span>I consent to payment reminders and receipts through portal notifications, SMS, or WhatsApp.</span></label>
-                  <label className="checkbox-label"><input required type="checkbox" /> <span>I understand this is not an emergency service. If there is immediate danger, I should contact local emergency or urgent care services.</span></label>
-                  <button className="primary-button form-submit" type="submit">Send private request <ArrowRight size={17} /></button>
-                </form>
-              </>
-            )}
-          </div>
-        </div>
-      )}
-
-      {portalOpen && (
-        <div className="modal-backdrop" role="presentation">
-          <div className="modal portal-modal" role="dialog" aria-modal="true" aria-labelledby="portal-title">
-            <button className="modal-close" onClick={() => setPortalOpen(false)} aria-label="Close portal sign in"><X size={20} /></button>
-            <div className="portal-brand"><span className="brand-mark"><HeartHandshake size={18} /></span> Harborlight portal</div>
-            <h2 id="portal-title">Welcome back.</h2>
-            <p className="modal-intro">Secure role-based access for patients, therapists, facilitators, recovery specialists, administrators, and approved family support.</p>
-            <form onSubmit={(event) => event.preventDefault()}>
-              <label>Email or mobile number<input required placeholder="you@example.com or +2547XXXXXXXX" /></label>
-              <label>Password<input required type="password" placeholder="Password" /></label>
-              <button className="primary-button form-submit" type="submit">Sign in <ArrowRight size={17} /></button>
-            </form>
-            <p className="portal-note">Prototype only. Authentication, telehealth, messaging, and M-Pesa services are not connected yet.</p>
-          </div>
-        </div>
-      )}
     </div>
   );
+}
+
+function MobileMenu({ page, navigate, close }) {
+  return (
+    <div className="mobile-menu" role="dialog" aria-modal="true" aria-label="Mobile navigation">
+      <div className="mobile-menu-panel">
+        <button className="modal-close" onClick={close} aria-label="Close menu"><X size={20} /></button>
+        <div className="brand"><span className="brand-mark"><HeartHandshake size={18} /></span><span>Harborlight</span></div>
+        <div className="mobile-route-list">
+          {routes.map((route) => {
+            const Icon = route.icon;
+            return <button key={route.id} className={page === route.id ? 'active' : ''} onClick={() => navigate(route.id)}><Icon size={18} /> {route.label}<ChevronRight size={17} /></button>;
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PageHero({ kicker, title, text, actions, visual }) {
+  return (
+    <section className="page-hero">
+      <div>
+        <p className="eyebrow"><span /> {kicker}</p>
+        <h1>{title}</h1>
+        <p className="hero-lede">{text}</p>
+        {actions && <div className="hero-actions">{actions}</div>}
+      </div>
+      {visual}
+    </section>
+  );
+}
+
+function HomePage({ navigate, session }) {
+  return (
+    <>
+      <PageHero
+        kicker="Kenya-ready recovery platform"
+        title="Treatment access that feels structured, private, and alive."
+        text="A PWA prototype for opioid rehabilitation and outpatient care with separate pages, demo login, telehealth workflows, recovery tools, staff dashboards, and M-Pesa-ready payment views."
+        actions={<><button className="primary-button" onClick={() => navigate('login')}>{session ? 'Open dashboard' : 'Use demo login'} <ArrowRight size={18} /></button><button className="secondary-button" onClick={() => navigate('programs')}>Explore programs</button></>}
+        visual={<EngagementPanel />}
+      />
+      <section className="feature-band">
+        {publicTools.map(([title, text, Icon]) => <article className="feature-card" key={title}><Icon size={24} /><h3>{title}</h3><p>{text}</p></article>)}
+      </section>
+      <section className="outcome-section">
+        <div><p className="section-kicker">Better outcomes</p><h2>Keep people engaged after the first click.</h2></div>
+        <div className="outcome-grid">
+          <div><strong>Daily rhythm</strong><span>Check-ins, goals, reminders, and session prep make recovery feel actionable.</span></div>
+          <div><strong>Care visibility</strong><span>Clinicians see risk flags, attendance, notes, and follow-up needs in one place.</span></div>
+          <div><strong>Low friction</strong><span>Mobile pages, PWA install, offline shell, and simple navigation reduce drop-off.</span></div>
+        </div>
+      </section>
+    </>
+  );
+}
+
+function EngagementPanel() {
+  return (
+    <div className="engagement-panel">
+      <div className="panel-top"><span className="pulse-dot" /> Live care snapshot</div>
+      <div className="engagement-row"><Video size={20} /><div><strong>18:00 Virtual IOP</strong><span>Waiting room opens in 18 minutes</span></div></div>
+      <div className="engagement-row"><Activity size={20} /><div><strong>Craving check-in</strong><span>Moderate trend, care team notified</span></div></div>
+      <div className="engagement-row"><MessageCircle size={20} /><div><strong>Secure message</strong><span>New worksheet feedback available</span></div></div>
+      <div className="progress-block"><span>Weekly engagement</span><strong>82%</strong><div><i style={{ width: '82%' }} /></div></div>
+    </div>
+  );
+}
+
+function ProgramsPage({ navigate }) {
+  return (
+    <>
+      <PageHero kicker="Program pages" title="Choose the right level of care without guessing." text="Each program page explains structure, intensity, fit, support tools, and what the patient or family should expect next." actions={<button className="primary-button" onClick={() => navigate('support')}>Start intake <ArrowRight size={18} /></button>} />
+      <section className="program-page-grid">
+        {programs.map((program) => <article className="program-detail" key={program.code}><span>{program.code}</span><h2>{program.title}</h2><b>{program.intensity}</b><p>{program.fit}</p><p>{program.detail}</p><button onClick={() => navigate('support')}>Discuss this option <ArrowRight size={16} /></button></article>)}
+      </section>
+    </>
+  );
+}
+
+function TelehealthPage({ navigate }) {
+  return (
+    <>
+      <PageHero kicker="Telehealth" title="A session experience designed for phones, groups, and real-world bandwidth." text="Patients get a readiness check and waiting room. Clinicians get roster, attendance, notes, risk context, and reconnection markers." actions={<button className="primary-button" onClick={() => navigate('login')}>Open demo console <ArrowRight size={18} /></button>} />
+      <section className="console-layout">
+        <div className="console-panel expanded"><div className="console-header"><Video size={18} /> Virtual IOP session <span>18:00 EAT</span></div><div className="readiness-grid"><div><Mic size={18} /><strong>Mic</strong><span>Ready</span></div><div><Video size={18} /><strong>Camera</strong><span>Ready</span></div><div><Wifi size={18} /><strong>Connection</strong><span>Limited but stable</span></div><div><Users size={18} /><strong>Roster</strong><span>7 expected</span></div></div><div className="waiting-room"><strong>Waiting room</strong><p>3 participants waiting. 1 participant needs a reconnect prompt.</p><button>Admit selected</button></div></div>
+        <div className="support-stack"><InfoTile title="Before session" text="Battery, privacy, data bundle, browser readiness, headset, and emergency disclaimer." /><InfoTile title="During session" text="Attendance, late entry, technical issue, left early, and care-team follow-up markers." /><InfoTile title="After session" text="Progress notes, group notes, assignments, receipts, and next-session reminders." /></div>
+      </section>
+    </>
+  );
+}
+
+function ResourcesPage({ navigate }) {
+  return (
+    <>
+      <PageHero kicker="Recovery resources" title="Practical content keeps the portal useful between appointments." text="Patients and families need tools they can use on hard days, not only explanations of the service." actions={<button className="primary-button" onClick={() => navigate('login')}>Try patient dashboard <ArrowRight size={18} /></button>} />
+      <section className="resource-grid">{resourceLibrary.map(([title, text]) => <article key={title} className="resource-card"><BookOpen size={22} /><h3>{title}</h3><p>{text}</p><button>Save resource</button></article>)}</section>
+    </>
+  );
+}
+
+function SupportPage({ navigate }) {
+  return (
+    <>
+      <PageHero kicker="Support and intake" title="Make asking for help feel clear, private, and immediate." text="This support page captures the next steps for patients, families, working adults, and people leaving higher levels of care." actions={<button className="primary-button" onClick={() => navigate('login')}>Continue to portal <ArrowRight size={18} /></button>} />
+      <section className="intake-page"><div><h2>Confidential request</h2><p>This static prototype shows the fields needed for routing. A production build should connect this to a secure backend, consent ledger, and staff queue.</p></div><form onSubmit={(event) => event.preventDefault()}><label>Full name<input placeholder="Your name" /></label><label>Mobile number<input placeholder="+2547XXXXXXXX" /></label><label>Program interest<select defaultValue=""><option value="" disabled>Select option</option><option>PHP / Day Treatment</option><option>IOP</option><option>Outpatient</option><option>Virtual IOP</option><option>Family support</option></select></label><label>What would help today?<textarea placeholder="Share only what you are comfortable sharing." /></label><button className="primary-button">Submit request <ArrowRight size={18} /></button></form></section>
+    </>
+  );
+}
+
+function LoginPage({ login, session, navigate }) {
+  const [selected, setSelected] = useState(demoAccounts[0]);
+  const [email, setEmail] = useState(demoAccounts[0].email);
+  const [password, setPassword] = useState(demoAccounts[0].password);
+  const [error, setError] = useState('');
+
+  const chooseAccount = (account) => { setSelected(account); setEmail(account.email); setPassword(account.password); setError(''); };
+  const submit = (event) => {
+    event.preventDefault();
+    const account = demoAccounts.find((item) => item.email === email.trim() && item.password === password);
+    if (!account) { setError('Use one of the demo credentials shown on this page.'); return; }
+    login(account);
+  };
+
+  if (session) return <PortalPage session={session} navigate={navigate} logout={() => { localStorage.removeItem('harborlight-session'); window.location.reload(); }} />;
+
+  return (
+    <section className="login-page">
+      <div className="login-copy"><p className="section-kicker">Demo access</p><h1>Sign in as a patient, clinician, or administrator.</h1><p>These are prototype credentials for exploring role-based workflows. They are stored only in the browser for demo navigation.</p><div className="credential-list">{demoAccounts.map((account) => <button key={account.role} className={selected.role === account.role ? 'active' : ''} onClick={() => chooseAccount(account)}><strong>{account.label}</strong><span>{account.email}</span><small>{account.password}</small></button>)}</div></div>
+      <form className="login-form" onSubmit={submit}><Lock size={24} /><h2>Portal sign in</h2><label>Email<input value={email} onChange={(event) => setEmail(event.target.value)} /></label><label>Password<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} /></label>{error && <p className="form-error">{error}</p>}<button className="primary-button" type="submit">Sign in <ArrowRight size={18} /></button></form>
+    </section>
+  );
+}
+
+function PortalPage({ session, navigate, logout }) {
+  const [mode, setMode] = useState('overview');
+  if (!session) return <LoginPage login={(account) => { localStorage.setItem('harborlight-session', JSON.stringify(account)); window.location.hash = '/portal'; window.location.reload(); }} navigate={navigate} />;
+
+  const cards = session.role === 'patient' ? patientCards : session.role === 'clinician' ? clinicianCards : adminCards;
+  return (
+    <section className="dashboard-page">
+      <aside className="dashboard-sidebar"><div className="brand"><span className="brand-mark"><HeartHandshake size={18} /></span><span>Portal</span></div><div className="user-chip"><strong>{session.name}</strong><span>{session.label} workspace</span></div><button className={mode === 'overview' ? 'active' : ''} onClick={() => setMode('overview')}><LayoutDashboard size={18} /> Overview</button><button className={mode === 'tasks' ? 'active' : ''} onClick={() => setMode('tasks')}><ClipboardCheck size={18} /> Tasks</button><button className={mode === 'messages' ? 'active' : ''} onClick={() => setMode('messages')}><MessageCircle size={18} /> Messages</button><button className={mode === 'payments' ? 'active' : ''} onClick={() => setMode('payments')}><WalletCards size={18} /> Payments</button><button onClick={logout}><LogOut size={18} /> Sign out</button></aside>
+      <div className="dashboard-main"><div className="dashboard-heading"><div><p className="section-kicker">{session.label} dashboard</p><h1>{dashboardTitle(session.role)}</h1></div><button className="secondary-button" onClick={() => navigate('home')}>Public site</button></div>{mode === 'overview' && <DashboardCards cards={cards} role={session.role} />}{mode === 'tasks' && <TasksPanel role={session.role} />}{mode === 'messages' && <MessagesPanel />}{mode === 'payments' && <PaymentsPanel />}</div>
+    </section>
+  );
+}
+
+function dashboardTitle(role) {
+  if (role === 'patient') return 'Your care plan, sessions, and recovery tools.';
+  if (role === 'clinician') return 'Clinical visibility without hunting through tabs.';
+  return 'Operations, consent, scheduling, and payment oversight.';
+}
+
+function DashboardCards({ cards, role }) {
+  return <><div className="dashboard-grid">{cards.map(([title, text, action, Icon]) => <article className="dashboard-card" key={title}><Icon size={24} /><h3>{title}</h3><p>{text}</p><button>{action}</button></article>)}</div><div className="insight-panel"><h2>{role === 'patient' ? "Today's recovery focus" : 'Outcome signals'}</h2><div className="insight-grid"><InfoTile title="Engagement" text="Session attendance, check-ins, tasks, and message response help care teams intervene earlier." /><InfoTile title="Safety" text="Visible disclaimers, consent-aware messaging, risk flags, and follow-up queues reduce blind spots." /><InfoTile title="Momentum" text="Goals, worksheets, receipts, reminders, and next steps make the portal worth returning to." /></div></div></>;
+}
+
+function TasksPanel({ role }) {
+  const tasks = role === 'patient' ? ['Complete daily check-in', 'Review relapse prevention worksheet', 'Confirm next session reminder', 'Save emergency contact'] : ['Review elevated craving flags', 'Sign pending notes', 'Assign follow-up for missed session', 'Confirm attendance for group roster'];
+  return <div className="task-list">{tasks.map((task, index) => <label key={task}><input type="checkbox" defaultChecked={index === 2} /><span>{task}</span></label>)}</div>;
+}
+
+function MessagesPanel() {
+  return <div className="message-panel"><InfoTile title="Secure portal alert" text="Your care team has shared an update. Sign in to review it privately." /><InfoTile title="WhatsApp reminder" text="Non-sensitive reminder: you have an upcoming appointment. Open the portal for details." /><InfoTile title="SMS fallback" text="Short message for low bandwidth situations with no clinical details exposed." /></div>;
+}
+
+function PaymentsPanel() {
+  return <div className="payment-table dashboard-payments">{[['Virtual IOP week 1', 'KES 12,500', 'Receipt issued', 'Paid'], ['Deposit request', 'KES 2,000', 'STK Push prepared', 'Pending'], ['Family session', 'KES 3,500', 'Admin review', 'Review']].map(([name, amount, detail, status]) => <div className="payment-row" key={name}><ReceiptText size={18} /><div><strong>{name}</strong><span>{detail}</span></div><b>{amount}</b><em>{status}</em></div>)}</div>;
+}
+
+function InfoTile({ title, text }) {
+  return <article className="info-tile"><h3>{title}</h3><p>{text}</p></article>;
 }
 
 createRoot(document.getElementById('root')).render(<App />);
