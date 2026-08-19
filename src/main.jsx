@@ -187,9 +187,9 @@ function MobileMenu({ page, navigate, close }) {
   );
 }
 
-function PageHero({ kicker, title, text, actions, visual }) {
+function PageHero({ kicker, title, text, actions, visual, className = '' }) {
   return (
-    <section className="page-hero">
+    <section className={`page-hero ${className}`.trim()}>
       <div>
         <p className="eyebrow"><span /> {kicker}</p>
         <h1>{title}</h1>
@@ -241,7 +241,7 @@ function EngagementPanel() {
 function ProgramsPage({ navigate }) {
   return (
     <>
-      <PageHero kicker="Program pages" title="Choose the right level of care without guessing." text="Each program page explains structure, intensity, fit, support tools, and what the patient or family should expect next." actions={<button className="primary-button" onClick={() => navigate('support')}>Start intake <ArrowRight size={18} /></button>} />
+      <PageHero className="programs-hero-copy" kicker="Program pages" title="Choose the right level of care without guessing." text="Each program page explains structure, intensity, fit, support tools, and what the patient or family should expect next." actions={<button className="primary-button" onClick={() => navigate('support')}>Start intake <ArrowRight size={18} /></button>} />
       <section className="program-page-grid">
         {programs.map((program) => <article className="program-detail" key={program.code}><span>{program.code}</span><h2>{program.title}</h2><b>{program.intensity}</b><p>{program.fit}</p><p>{program.detail}</p><button onClick={() => navigate('support')}>Discuss this option <ArrowRight size={16} /></button></article>)}
       </section>
@@ -375,5 +375,6 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+
 
 
