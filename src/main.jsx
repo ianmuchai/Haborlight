@@ -229,12 +229,13 @@ function HomePage({ navigate, session, openPortalMode }) {
   return (
     <>
       <PageHero
-        kicker="Kenya-ready recovery platform"
-        title="Treatment access that feels structured, private, and alive."
-        text="Private opioid rehabilitation and outpatient support, with telehealth access, recovery guidance, care-team connection, and clear payment information."
-        actions={<><button className="primary-button" onClick={() => navigate('login')}>{session ? 'Open dashboard' : 'Patient account login'} <ArrowRight size={18} /></button><button className="secondary-button" onClick={() => navigate('programs')}>Explore programs</button></>}
+        kicker="Secure care portal"
+        title="The main system for patients, clinicians, and administrators."
+        text="Sign in to manage care, sessions, messages, recovery tools, schedules, consent, and payments from one private workspace."
+        actions={<><button className="primary-button portal-primary" onClick={() => navigate(session ? 'portal' : 'login')}>{session ? 'Open dashboard' : 'Enter main system'} <ArrowRight size={18} /></button><button className="secondary-button" onClick={() => navigate('support')}>Request support</button></>}
         visual={<EngagementPanel />}
       />
+      <HomeLoginGateway navigate={navigate} session={session} />
       <section className="feature-band">
         {publicTools.map(([title, text, Icon, target, action]) => <article className="feature-card" key={title}><Icon size={24} /><h3>{title}</h3><p>{text}</p><button onClick={() => target.startsWith('portal:') ? openPortalMode(target.replace('portal:', '')) : navigate(target)}>{action} <ArrowRight size={16} /></button></article>)}
       </section>
@@ -250,6 +251,42 @@ function HomePage({ navigate, session, openPortalMode }) {
   );
 }
 
+
+function HomeLoginGateway({ navigate, session }) {
+  const action = session ? 'Open dashboard' : 'Sign in';
+  const enterAs = (role) => {
+    localStorage.setItem('harborlight-preferred-role', role);
+    navigate(session ? 'portal' : 'login');
+  };
+  return (
+    <section className="portal-gateway" aria-label="Main system access">
+      <div>
+        <p className="section-kicker">Main system access</p>
+        <h2>Start inside the workspace that matches your role.</h2>
+      </div>
+      <div className="portal-gateway-grid">
+        <article>
+          <Users size={22} />
+          <h3>Patient portal</h3>
+          <p>Join sessions, complete check-ins, review recovery tasks, message the care team, and view payments.</p>
+          <button onClick={() => enterAs('patient')}>{action} <ArrowRight size={16} /></button>
+        </article>
+        <article>
+          <Stethoscope size={22} />
+          <h3>Clinician workspace</h3>
+          <p>Manage waiting rooms, risk reviews, notes, follow-up tasks, and private patient communication.</p>
+          <button onClick={() => enterAs('clinician')}>{action} <ArrowRight size={16} /></button>
+        </article>
+        <article>
+          <ShieldCheck size={22} />
+          <h3>Admin console</h3>
+          <p>Review intake, scheduling, consent, receipts, and operational readiness across the care program.</p>
+          <button onClick={() => enterAs('admin')}>{action} <ArrowRight size={16} /></button>
+        </article>
+      </div>
+    </section>
+  );
+}
 function EngagementPanel() {
   return (
     <div className="engagement-panel">
@@ -368,9 +405,10 @@ function IntakeSentPage({ navigate }) {
 }
 
 function LoginPage({ login, session, navigate, portalMode, setPortalMode }) {
-  const [selected, setSelected] = useState(demoAccounts[0]);
-  const [email, setEmail] = useState(demoAccounts[0].email);
-  const [password, setPassword] = useState(demoAccounts[0].password);
+  const preferredAccount = demoAccounts.find((account) => account.role === localStorage.getItem('harborlight-preferred-role')) || demoAccounts[0];
+  const [selected, setSelected] = useState(preferredAccount);
+  const [email, setEmail] = useState(preferredAccount.email);
+  const [password, setPassword] = useState(preferredAccount.password);
   const [error, setError] = useState('');
 
   const chooseAccount = (account) => { setSelected(account); setEmail(account.email); setPassword(account.password); setError(''); };
@@ -491,6 +529,10 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+
+
+
+
 
 
 
