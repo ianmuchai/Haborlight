@@ -215,9 +215,9 @@ function PageHero({ kicker, title, text, actions, visual, className = '' }) {
   return (
     <section className={`page-hero ${className}`.trim()}>
       <div>
-        <p className="eyebrow"><span /> {kicker}</p>
+        {kicker && <p className="eyebrow"><span /> {kicker}</p>}
         <h1>{title}</h1>
-        <p className="hero-lede">{text}</p>
+        {text && <p className="hero-lede">{text}</p>}
         {actions && <div className="hero-actions">{actions}</div>}
       </div>
       {visual}
@@ -229,9 +229,9 @@ function HomePage({ navigate, session, openPortalMode }) {
   return (
     <>
       <PageHero
-        kicker="Secure care portal"
-        title="The main system for patients, clinicians, and administrators."
-        text="Sign in to manage care, sessions, messages, recovery tools, schedules, consent, and payments from one private workspace."
+        kicker=""
+        title="Sign in to manage care, sessions, messages, recovery tools, schedules, consent, and payments from one private workspace."
+        text=""
         actions={<><button className="primary-button portal-primary" onClick={() => navigate(session ? 'portal' : 'login')}>{session ? 'Open dashboard' : 'Enter main system'} <ArrowRight size={18} /></button><button className="secondary-button" onClick={() => navigate('support')}>Request support</button></>}
         visual={<EngagementPanel />}
       />
@@ -529,6 +529,8 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+
+
 
 
 
