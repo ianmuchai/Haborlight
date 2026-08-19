@@ -229,8 +229,9 @@ function HomePage({ navigate, session, openPortalMode }) {
   return (
     <>
       <PageHero
+        className="home-system-hero"
         kicker=""
-        title="Sign in to manage care, sessions, messages, recovery tools, schedules, consent, and payments from one private workspace."
+        title="Sign in to access care, sessions, messages, recovery tools, schedules, consent, and payments."
         text=""
         actions={<><button className="primary-button portal-primary" onClick={() => navigate(session ? 'portal' : 'login')}>{session ? 'Open dashboard' : 'Enter main system'} <ArrowRight size={18} /></button><button className="secondary-button" onClick={() => navigate('support')}>Request support</button></>}
         visual={<EngagementPanel />}
@@ -529,6 +530,8 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+
+
 
 
 
