@@ -484,49 +484,68 @@ function dashboardTitle(role) {
 }
 
 function DashboardCards({ cards, role, setMode }) {
-  return <><div className="dashboard-grid">{cards.map(([title, text, action, Icon, target]) => <article className="dashboard-card" key={title}><Icon size={24} /><h3>{title}</h3><p>{text}</p><button onClick={() => setMode(target)}>{action}</button></article>)}</div><div className="insight-panel"><h2>{role === 'patient' ? "Today's recovery focus" : 'Outcome signals'}</h2><div className="insight-grid"><InfoTile title="Engagement" text="Attendance, check-ins, and replies help the care team notice changes earlier." /><InfoTile title="Safety" text="Consent, safety prompts, and follow-up lists keep care visible." /><InfoTile title="Momentum" text="Goals, reminders, and next steps give every visit a purpose." /></div></div></>;
+  return <><div className="dashboard-grid">{cards.map(([title, text, action, Icon, target]) => <article className="dashboard-card" key={title}><Icon size={24} /><h3>{title}</h3><p>{text}</p><button onClick={() => setMode(target)}>{action}</button></article>)}</div><RoleOverview role={role} setMode={setMode} /></>;
+}
+
+function RoleOverview({ role, setMode }) {
+  if (role === 'patient') {
+    return <section className="role-overview"><div><p className="section-kicker">Today</p><h2>Recovery plan at a glance</h2></div><div className="metric-grid"><MetricCard label="Engagement" value="82%" text="Sessions, check-ins, and worksheet activity this week." /><MetricCard label="Craving trend" value="4/10" text="Moderate, improving after two support contacts." /><MetricCard label="Next step" value="18:00" text="Virtual IOP waiting room opens before group." /></div><div className="quick-actions"><button onClick={() => setMode('session')}><Video size={16} /> Join session</button><button onClick={() => setMode('checkin')}><Activity size={16} /> Daily check-in</button><button onClick={() => setMode('messages')}><MessageCircle size={16} /> Message care team</button></div></section>;
+  }
+  if (role === 'clinician') {
+    return <section className="role-overview"><div><p className="section-kicker">Clinical priority</p><h2>Prepare the next care decision</h2></div><div className="metric-grid"><MetricCard label="Waiting room" value="3 ready" text="One participant is reconnecting before group starts." /><MetricCard label="Risk flags" value="2 open" text="Elevated cravings and one missed check-in need review." /><MetricCard label="Notes" value="3 due" text="Two progress notes and one group note remain pending." /></div><div className="quick-actions"><button onClick={() => setMode('session')}><Users size={16} /> Waiting room</button><button onClick={() => setMode('risk')}><Activity size={16} /> Risk review</button><button onClick={() => setMode('notes')}><FileText size={16} /> Notes</button></div></section>;
+  }
+  return <section className="role-overview"><div><p className="section-kicker">Operations</p><h2>Program readiness and revenue visibility</h2></div><div className="metric-grid"><MetricCard label="New intake" value="8" text="Three priority callbacks need assignment today." /><MetricCard label="Capacity" value="76%" text="PHP, IOP, OP, and Virtual IOP scheduling utilization." /><MetricCard label="Payments" value="KES 18k" text="Pending receipts and reconciliation items for review." /></div><div className="quick-actions"><button onClick={() => setMode('intake')}><ClipboardCheck size={16} /> Intake queue</button><button onClick={() => setMode('schedule')}><CalendarClock size={16} /> Schedule</button><button onClick={() => setMode('payments')}><WalletCards size={16} /> Payments</button></div></section>;
+}
+
+function MetricCard({ label, value, text }) {
+  return <article className="metric-card"><span>{label}</span><strong>{value}</strong><p>{text}</p></article>;
 }
 
 function SessionPanel({ role, setMode }) {
-  const clinician = role !== 'patient';
-  return <div className="work-panel"><div className="console-panel expanded"><div className="console-header"><Video size={18} /> {clinician ? 'Virtual IOP waiting room' : 'Upcoming Virtual IOP'} <span>18:00 EAT</span></div><div className="readiness-grid"><div><Mic size={18} /><strong>Mic</strong><span>Ready</span></div><div><Video size={18} /><strong>Camera</strong><span>Ready</span></div><div><Wifi size={18} /><strong>Connection</strong><span>Stable</span></div><div><Users size={18} /><strong>{clinician ? 'Roster' : 'Group'}</strong><span>{clinician ? '7 expected' : 'Starts soon'}</span></div></div><div className="waiting-room"><strong>{clinician ? 'Participants' : 'Readiness'}</strong><p>{clinician ? 'Three participants are ready, one is reconnecting, and attendance can be confirmed from here.' : 'Your device checks are ready. Join from a private place and keep headphones nearby.'}</p><button onClick={() => setMode(clinician ? 'notes' : 'checkin')}>{clinician ? 'Admit ready participants' : 'Join waiting room'}</button></div></div></div>;
+  if (role === 'admin') return <SchedulePanel />;
+  const clinician = role === 'clinician';
+  return <div className="work-panel split-panel"><div className="console-panel expanded"><div className="console-header"><Video size={18} /> {clinician ? 'Virtual IOP waiting room' : 'Upcoming Virtual IOP'} <span>18:00 EAT</span></div><div className="readiness-grid"><div><Mic size={18} /><strong>Mic</strong><span>Ready</span></div><div><Video size={18} /><strong>Camera</strong><span>Ready</span></div><div><Wifi size={18} /><strong>Connection</strong><span>Stable</span></div><div><Users size={18} /><strong>{clinician ? 'Roster' : 'Group'}</strong><span>{clinician ? '7 expected' : 'Starts soon'}</span></div></div><div className="waiting-room"><strong>{clinician ? 'Participant readiness' : 'Session readiness'}</strong><p>{clinician ? 'Admit ready participants, mark reconnections, and keep attendance tied to documentation.' : 'Join from a private location. Your care team will see your readiness check before group starts.'}</p><button onClick={() => setMode(clinician ? 'notes' : 'checkin')}>{clinician ? 'Admit and document' : 'Join waiting room'}</button></div></div><div className="support-stack"><InfoTile title={clinician ? 'Roster support' : 'Before joining'} text={clinician ? 'Sort ready, reconnecting, late, and absent participants before opening the session.' : 'Keep headphones nearby, close other apps, and stay in a private space.'} /><InfoTile title={clinician ? 'Session note' : 'Care reminder'} text={clinician ? 'Group notes and individual follow-ups can be opened after admission.' : 'Complete your check-in before the session so the team can support you better.'} /></div></div>;
 }
 
 function CheckInPanel() {
-  return <div className="form-panel"><h2>Daily check-in</h2><label>Craving level<input type="range" min="0" max="10" defaultValue="4" /></label><label>Mood today<select defaultValue="steady"><option value="steady">Steady</option><option value="low">Low</option><option value="anxious">Anxious</option><option value="strong">Strong</option></select></label><label>What changed today?<textarea placeholder="Sleep, triggers, wins, medication notes, or support needs." /></label><button className="primary-button">Save check-in <ArrowRight size={18} /></button></div>;
+  return <div className="form-panel enhanced-form"><div><p className="section-kicker">Patient check-in</p><h2>Daily recovery check</h2></div><div className="form-grid"><label>Craving level<input type="range" min="0" max="10" defaultValue="4" /></label><label>Mood today<select defaultValue="steady"><option value="steady">Steady</option><option value="low">Low</option><option value="anxious">Anxious</option><option value="strong">Strong</option></select></label><label>Sleep quality<select defaultValue="fair"><option value="good">Good</option><option value="fair">Fair</option><option value="poor">Poor</option></select></label><label>Medication taken<select defaultValue="yes"><option value="yes">Yes</option><option value="no">No</option><option value="na">Not applicable</option></select></label></div><label>What changed today?<textarea placeholder="Sleep, triggers, wins, medication notes, or support needs." /></label><div className="quick-actions"><button><ShieldCheck size={16} /> Request support</button><button><Check size={16} /> Save check-in</button></div></div>;
 }
 
 function TasksPanel({ role }) {
-  const tasks = role === 'patient' ? ['Complete daily check-in', 'Review relapse prevention worksheet', 'Confirm next session reminder', 'Save emergency contact'] : ['Review elevated craving flags', 'Sign pending notes', 'Assign follow-up for missed session', 'Confirm attendance for group roster'];
-  return <div className="task-list">{tasks.map((task, index) => <label key={task}><input type="checkbox" defaultChecked={index === 2} /><span>{task}</span></label>)}</div>;
+  const tasks = role === 'patient' ? ['Complete daily check-in', 'Review relapse prevention worksheet', 'Confirm next session reminder', 'Save emergency contact'] : role === 'clinician' ? ['Review elevated craving flags', 'Sign pending notes', 'Assign follow-up for missed session', 'Confirm attendance for group roster'] : ['Assign priority callbacks', 'Confirm Virtual IOP capacity', 'Review pending M-Pesa receipts', 'Check consent and access logs'];
+  return <div className="task-list detailed-list">{tasks.map((task, index) => <label key={task}><input type="checkbox" defaultChecked={index === 2} /><span>{task}</span><small>{index === 0 ? 'Priority' : index === 1 ? 'Today' : 'Open'}</small></label>)}</div>;
 }
 
 function RiskPanel() {
-  return <div className="work-grid"><InfoTile title="Elevated craving" text="Two patients reported higher cravings and missed one worksheet." /><InfoTile title="Attendance change" text="One participant missed group and needs follow-up before the next session." /><InfoTile title="Protective factors" text="Family consent, sponsor contact, and medication adherence are visible for review." /></div>;
+  return <div className="work-grid"><InfoTile title="Elevated craving" text="Two patients reported higher cravings and missed one worksheet." /><InfoTile title="Attendance change" text="One participant missed group and needs follow-up before the next session." /><InfoTile title="Protective factors" text="Family consent, sponsor contact, and medication adherence are visible for review." /><InfoTile title="Suggested action" text="Send a secure message, schedule a brief call, or assign a worksheet from follow-up tasks." /><InfoTile title="Clinical context" text="Recent sleep disruption and stress notes are visible before the next session." /><InfoTile title="Safety review" text="Escalation prompts help clinicians document what was reviewed and why." /></div>;
 }
 
 function NotesPanel() {
-  return <div className="form-panel"><h2>Clinical notes</h2><label>Progress note<textarea defaultValue="Patient attended group, identified trigger pattern, and agreed to a follow-up check-in." /></label><label>Plan<textarea defaultValue="Review craving plan, confirm next session, and update recovery goals." /></label><button className="primary-button">Save note <ArrowRight size={18} /></button></div>;
+  return <div className="form-panel enhanced-form"><div><p className="section-kicker">Documentation</p><h2>Clinical note workspace</h2></div><div className="form-grid"><label>Note type<select defaultValue="progress"><option value="progress">Progress note</option><option value="group">Group note</option><option value="family">Family contact</option></select></label><label>Risk level<select defaultValue="moderate"><option value="low">Low</option><option value="moderate">Moderate</option><option value="high">High</option></select></label></div><label>Progress note<textarea defaultValue="Patient attended group, identified trigger pattern, and agreed to a follow-up check-in." /></label><label>Plan<textarea defaultValue="Review craving plan, confirm next session, and update recovery goals." /></label><div className="quick-actions"><button><FileText size={16} /> Save draft</button><button><Check size={16} /> Sign note</button></div></div>;
 }
 
 function MessagesPanel() {
-  return <div className="message-panel"><InfoTile title="Secure portal alert" text="Your care team has shared an update. Sign in to review it privately." /><InfoTile title="WhatsApp reminder" text="Non-sensitive reminder: you have an upcoming appointment. Open the portal for details." /><InfoTile title="SMS fallback" text="Short message for low bandwidth situations with no clinical details exposed." /></div>;
+  return <div className="message-panel rich-messages"><InfoTile title="Secure portal alert" text="Your care team has shared an update. Sign in to review it privately." /><InfoTile title="WhatsApp reminder" text="Non-sensitive reminder: you have an upcoming appointment. Open the portal for details." /><InfoTile title="SMS fallback" text="Short message for low bandwidth situations with no clinical details exposed." /><InfoTile title="Care-team inbox" text="Messages can be routed by patient, clinician, administrator, or payment follow-up." /></div>;
 }
 
 function PaymentsPanel() {
-  return <div className="payment-table dashboard-payments">{[['Virtual IOP week 1', 'KES 12,500', 'Receipt issued', 'Paid'], ['Deposit request', 'KES 2,000', 'STK Push prepared', 'Pending'], ['Family session', 'KES 3,500', 'Admin review', 'Review']].map(([name, amount, detail, status]) => <div className="payment-row" key={name}><ReceiptText size={18} /><div><strong>{name}</strong><span>{detail}</span></div><b>{amount}</b><em>{status}</em></div>)}</div>;
+  return <div className="payment-workspace"><div className="payment-table dashboard-payments">{[['Virtual IOP week 1', 'KES 12,500', 'Receipt issued', 'Paid'], ['Deposit request', 'KES 2,000', 'STK Push prepared', 'Pending'], ['Family session', 'KES 3,500', 'Admin review', 'Review']].map(([name, amount, detail, status]) => <div className="payment-row" key={name}><ReceiptText size={18} /><div><strong>{name}</strong><span>{detail}</span></div><b>{amount}</b><em>{status}</em></div>)}</div><div className="work-grid compact"><InfoTile title="M-Pesa readiness" text="STK Push and receipt states are visible for patient and admin review." /><InfoTile title="Receipts" text="Patients can see paid items while administrators review exceptions." /><InfoTile title="Reconciliation" text="Pending items stay visible until reviewed by operations." /></div></div>;
 }
 
 function IntakeQueuePanel() {
-  return <div className="work-grid"><InfoTile title="Priority callbacks" text="Three requests need coordinator contact today." /><InfoTile title="Program fit" text="Requests are grouped by PHP, IOP, OP, Virtual IOP, and family support." /><InfoTile title="Payment readiness" text="M-Pesa preference and receipt needs are visible before scheduling." /></div>;
+  return <div className="queue-board"><QueueColumn title="Priority" items={['Callback: opioid withdrawal support', 'Family consent request', 'Deposit question before admission']} /><QueueColumn title="Program fit" items={['PHP assessment', 'Virtual IOP request', 'Outpatient continuation']} /><QueueColumn title="Ready to schedule" items={['IOP evening group', 'Family support session', 'Medication referral']} /></div>;
+}
+
+function QueueColumn({ title, items }) {
+  return <article className="queue-column"><h3>{title}</h3>{items.map((item) => <button key={item}>{item}<ChevronRight size={15} /></button>)}</article>;
 }
 
 function SchedulePanel() {
-  return <div className="work-grid"><InfoTile title="PHP" text="Morning day-treatment capacity available this week." /><InfoTile title="IOP" text="Evening group has two available places." /><InfoTile title="Virtual IOP" text="Remote group has open capacity and active waiting-room support." /></div>;
+  return <div className="schedule-board"><InfoTile title="PHP" text="Morning day-treatment capacity available this week." /><InfoTile title="IOP" text="Evening group has two available places." /><InfoTile title="Virtual IOP" text="Remote group has open capacity and active waiting-room support." /><div className="calendar-strip">{['Mon PHP', 'Tue IOP', 'Wed OP', 'Thu VIOP', 'Fri Family'].map((item) => <span key={item}>{item}</span>)}</div></div>;
 }
 
 function AuditPanel() {
-  return <div className="work-grid"><InfoTile title="Consent" text="Family access and care-team permissions are ready for review." /><InfoTile title="Messaging" text="Sensitive details stay in the portal while reminders stay discreet." /><InfoTile title="Payments" text="Receipt and reconciliation activity is visible for administrative review." /></div>;
+  return <div className="work-grid"><InfoTile title="Consent" text="Family access and care-team permissions are ready for review." /><InfoTile title="Messaging" text="Sensitive details stay in the portal while reminders stay discreet." /><InfoTile title="Payments" text="Receipt and reconciliation activity is visible for administrative review." /><InfoTile title="Access history" text="Role changes, portal access, and note updates can be reviewed before escalation." /><InfoTile title="Privacy checks" text="Discreet messaging and consent boundaries remain visible to administrators." /><InfoTile title="Readiness" text="Operational checks help teams prepare for pitch and care delivery discussions." /></div>;
 }
 function InfoTile({ title, text }) {
   return <article className="info-tile"><h3>{title}</h3><p>{text}</p></article>;
@@ -540,6 +559,7 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+
 
 
 
