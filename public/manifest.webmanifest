@@ -1,0 +1,20 @@
+﻿{
+  "name": "Harborlight Recovery Platform",
+  "short_name": "Harborlight",
+  "description": "Mobile-first opioid rehabilitation, telehealth, messaging, and M-Pesa payment platform prototype.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#fffdf8",
+  "theme_color": "#0d3b43",
+  "categories": ["health", "medical", "productivity"],
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Start Intake", "short_name": "Intake", "description": "Open the confidential intake flow", "url": "/#top", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Portal Preview", "short_name": "Portal", "description": "View the role-based portal preview", "url": "/#portal", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

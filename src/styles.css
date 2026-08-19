@@ -233,3 +233,169 @@ li svg { color: var(--green); flex: 0 0 auto; }
   .site-footer { display: grid; align-items: start; padding: 24px 22px; }
   .modal { padding: 30px 20px 24px; }
 }
+
+/* Professional density pass: smaller bold display text and adaptive rhythm. */
+:root {
+  --page-x: clamp(20px, 5vw, 96px);
+  --section-y: clamp(56px, 8vw, 88px);
+  --touch: 44px;
+  --mobile-header: 64px;
+  --shadow-soft: 0 14px 40px rgba(13, 59, 67, .11);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100dvh;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+h1 { font-size: clamp(34px, 4.7vw, 62px); line-height: 1.06; font-weight: 700; max-width: 12ch; }
+h2 { font-size: clamp(26px, 3vw, 40px); line-height: 1.12; font-weight: 700; }
+h3 { font-size: clamp(18px, 1.7vw, 23px); line-height: 1.18; font-weight: 700; }
+strong, b { font-weight: 700; }
+.hero-lede { font-size: clamp(15px, 1.4vw, 17px); line-height: 1.62; }
+.section-kicker, .eyebrow { font-size: 10px; letter-spacing: .1em; }
+
+.site-header { padding-inline: var(--page-x); }
+.hero-section { min-height: min(690px, calc(100dvh - 76px)); padding: var(--section-y) var(--page-x); }
+.program-section, .journey-section, .portal-section, .faq-section, .telehealth-section, .payments-section { padding: var(--section-y) var(--page-x); }
+.communication-section { padding: 0 var(--page-x) var(--section-y); }
+.closing-section, .site-footer { padding-inline: var(--page-x); }
+
+.program-card h3, .portal-preview aside h3, .session-card h3 { font-size: clamp(18px, 1.55vw, 22px); }
+.metrics-strip strong { font-size: clamp(23px, 2.3vw, 28px); }
+.journey-item strong { margin-top: 26px; font-size: 16px; }
+.portal-row strong, .payment-row strong, .comm-card strong { font-size: 14px; }
+.program-code { margin-bottom: 24px; }
+.program-card { min-height: 330px; box-shadow: var(--shadow-soft); }
+.console-panel, .portal-preview, .payment-table, .comm-card { box-shadow: var(--shadow-soft); }
+
+button, a, input, select, textarea { -webkit-tap-highlight-color: rgba(223, 116, 93, .18); }
+button, .primary-button, .secondary-button, .header-cta { min-height: var(--touch); }
+input, select, textarea { min-height: var(--touch); }
+
+@supports (padding: max(0px)) {
+  .site-header { padding-left: max(var(--page-x), env(safe-area-inset-left)); padding-right: max(var(--page-x), env(safe-area-inset-right)); }
+  .modal-backdrop { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); padding-bottom: max(16px, env(safe-area-inset-bottom)); }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .header-cta:hover, .primary-button:hover, .secondary-button:hover { transform: none; }
+  .desktop-nav a:hover, .text-button:hover { color: inherit; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+}
+
+@media (max-width: 760px) {
+  :root { --page-x: clamp(16px, 5vw, 22px); --section-y: 46px; }
+  body { background: var(--wash); }
+  .app-shell { background: var(--wash); }
+  .site-header {
+    height: calc(var(--mobile-header) + env(safe-area-inset-top));
+    padding-top: env(safe-area-inset-top);
+    align-items: center;
+    background: rgba(255, 253, 248, .98);
+  }
+  .brand { font-size: 16px; gap: 8px; }
+  .brand-mark { width: 30px; height: 30px; border-radius: 7px; }
+  .header-actions { gap: 8px; }
+  .header-cta { min-height: 38px; padding-inline: 11px; font-size: 12px; }
+  .menu-button { width: 40px; height: 40px; place-items: center; border-radius: 8px; background: var(--white); border: 1px solid var(--line); }
+
+  .hero-section {
+    min-height: auto;
+    padding-top: 34px;
+    background: var(--paper);
+    gap: 30px;
+  }
+  h1 { max-width: 13ch; font-size: clamp(31px, 9.4vw, 42px); line-height: 1.08; margin-bottom: 16px; }
+  h2 { font-size: clamp(24px, 7.2vw, 32px); line-height: 1.14; }
+  h3 { font-size: 18px; }
+  .hero-lede { margin-bottom: 22px; font-size: 15px; line-height: 1.58; }
+  .hero-actions { display: grid; grid-template-columns: 1fr; gap: 10px; }
+  .primary-button, .secondary-button { width: 100%; min-height: 46px; }
+  .trust-row { gap: 8px; margin-top: 22px; }
+  .trust-row span { width: 100%; border-radius: 8px; justify-content: flex-start; }
+
+  .phone-shell { border-radius: 18px; padding: 12px; box-shadow: none; }
+  .phone-top { height: 34px; }
+  .session-card { padding: 16px; border-radius: 12px; }
+  .session-card h3 { font-size: 19px; }
+  .mini-grid { grid-template-columns: 1fr; }
+  .payment-chip { display: grid; grid-template-columns: 20px 1fr; align-items: start; }
+  .payment-chip span { grid-column: 2; }
+
+  .metrics-strip { grid-template-columns: 1fr 1fr; background: var(--ink); }
+  .metrics-strip div { min-height: 88px; padding: 18px var(--page-x); }
+  .metrics-strip strong { font-size: 22px; }
+
+  .section-heading { margin-bottom: 24px; }
+  .section-heading > p:last-child { font-size: 14px; }
+  .program-card, .comm-card { border-radius: 7px; box-shadow: none; }
+  .program-card { padding: 18px; }
+  .program-code { margin-bottom: 16px; }
+  ul { margin-top: 18px; }
+  li { align-items: flex-start; }
+
+  .journey-list, .portal-preview, .payment-table, .console-panel { border-radius: 7px; box-shadow: none; }
+  .journey-item { padding: 18px; }
+  .journey-item strong { margin-top: 16px; }
+  .readiness-grid { grid-template-columns: 1fr; }
+  .readiness-grid div { min-height: 92px; border-right: 0; border-bottom: 1px solid var(--line); }
+  .readiness-grid div:last-child { border-bottom: 0; }
+  .console-header { min-height: 52px; flex-wrap: wrap; padding-block: 10px; }
+  .console-header span { margin-left: 0; width: 100%; }
+
+  .portal-tabs { position: sticky; top: calc(var(--mobile-header) + env(safe-area-inset-top)); z-index: 3; grid-template-columns: repeat(3, minmax(0, 1fr)); background: rgba(244, 247, 245, .96); backdrop-filter: blur(12px); }
+  .portal-tabs button { min-height: 42px; font-size: 12px; }
+  .portal-preview aside { padding: 20px; }
+  .portal-row { min-height: auto; padding: 16px; gap: 12px; }
+  .portal-row button { min-height: 38px; }
+
+  .payment-row { min-height: auto; padding: 15px; gap: 9px 12px; }
+  .payment-row em { border-radius: 6px; }
+  .comm-card { min-height: auto; padding: 18px; }
+
+  .faq-item button { min-height: 62px; gap: 16px; font-size: 14px; }
+  .faq-item p { font-size: 14px; }
+  .closing-section { padding-block: 44px; }
+  .site-footer { min-height: auto; }
+
+  .modal-backdrop { align-items: end; padding: 0; }
+  .modal {
+    width: 100%;
+    max-height: calc(100dvh - env(safe-area-inset-top));
+    border-radius: 18px 18px 0 0;
+    padding: 28px var(--page-x) max(24px, env(safe-area-inset-bottom));
+  }
+  .modal h2 { font-size: 28px; }
+  .modal input, .modal select, .modal textarea { font-size: 16px; }
+  .checkbox-label { font-size: 12px !important; }
+}
+
+@media (max-width: 420px) {
+  .brand span:last-child { max-width: 112px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .header-cta svg { display: none; }
+  .header-cta { padding-inline: 10px; }
+  h1 { font-size: clamp(29px, 8.8vw, 36px); }
+  .metrics-strip { grid-template-columns: 1fr; }
+  .portal-tabs { gap: 4px; padding: 4px; }
+  .portal-tabs button { font-size: 11px; }
+}
+
+@media (max-width: 760px) and (orientation: landscape) {
+  .hero-section { grid-template-columns: 1fr 1fr; align-items: start; }
+  .hero-product { align-self: start; }
+  .phone-shell { max-width: 330px; }
+  .metrics-strip { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (min-width: 761px) and (max-width: 1180px) {
+  h1 { max-width: 14ch; }
+  .program-grid { grid-template-columns: repeat(2, 1fr); }
+  .program-card { min-height: 300px; }
+}
