@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = 'harborlight-pwa-v4';
+﻿const CACHE_NAME = 'harborlight-pwa-v5';
 const APP_SHELL = [
   '/',
   '/index.html',
@@ -50,6 +50,7 @@ self.addEventListener('fetch', (event) => {
     }).catch(() => cached))
   );
 });
+
 
 
 

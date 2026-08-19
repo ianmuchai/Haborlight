@@ -208,7 +208,7 @@ function HomePage({ navigate, session }) {
         kicker="Kenya-ready recovery platform"
         title="Treatment access that feels structured, private, and alive."
         text="Confidential opioid rehabilitation and outpatient support with telehealth access, recovery tools, care-team coordination, reminders, and M-Pesa-ready payment views."
-        actions={<><button className="primary-button" onClick={() => navigate('login')}>{session ? 'Open dashboard' : 'Access portal'} <ArrowRight size={18} /></button><button className="secondary-button" onClick={() => navigate('programs')}>Explore programs</button></>}
+        actions={<><button className="primary-button" onClick={() => navigate('login')}>{session ? 'Open dashboard' : 'Patient account login'} <ArrowRight size={18} /></button><button className="secondary-button" onClick={() => navigate('programs')}>Explore programs</button></>}
         visual={<EngagementPanel />}
       />
       <section className="feature-band">
@@ -252,7 +252,7 @@ function ProgramsPage({ navigate }) {
 function TelehealthPage({ navigate }) {
   return (
     <>
-      <PageHero kicker="Telehealth" title="A session experience designed for phones, groups, and real-world bandwidth." text="Patients get a readiness check and waiting room. Clinicians get roster, attendance, notes, risk context, and reconnection markers." actions={<button className="primary-button" onClick={() => navigate('login')}>Open session console <ArrowRight size={18} /></button>} />
+      <PageHero kicker="Telehealth" title="A session experience designed for phones, groups, and real-world bandwidth." text="Patients get a readiness check and waiting room. Clinicians get roster, attendance, notes, risk context, and reconnection markers." actions={<button className="primary-button" onClick={() => navigate('login')}>Patient account login <ArrowRight size={18} /></button>} />
       <section className="console-layout">
         <div className="console-panel expanded"><div className="console-header"><Video size={18} /> Virtual IOP session <span>18:00 EAT</span></div><div className="readiness-grid"><div><Mic size={18} /><strong>Mic</strong><span>Ready</span></div><div><Video size={18} /><strong>Camera</strong><span>Ready</span></div><div><Wifi size={18} /><strong>Connection</strong><span>Limited but stable</span></div><div><Users size={18} /><strong>Roster</strong><span>7 expected</span></div></div><div className="waiting-room"><strong>Waiting room</strong><p>3 participants waiting. 1 participant needs a reconnect prompt.</p><button onClick={() => navigate('login')}>Admit selected</button></div></div>
         <div className="support-stack"><InfoTile title="Before session" text="Battery, privacy, data bundle, browser readiness, headset, and emergency disclaimer." /><InfoTile title="During session" text="Attendance, late entry, technical issue, left early, and care-team follow-up markers." /><InfoTile title="After session" text="Progress notes, group notes, assignments, receipts, and next-session reminders." /></div>
@@ -285,13 +285,13 @@ function IntakeSentPage({ navigate }) {
       <PageHero
         kicker="Request submitted"
         title="Your confidential request has been received."
-        text="This page confirms what the user expects after submitting intake: coordinator review, privacy-aware follow-up, and a path into portal access."
-        actions={<><button className="primary-button" onClick={() => navigate('login')}>Create portal access <ArrowRight size={18} /></button><button className="secondary-button" onClick={() => navigate('support')}>Submit another request</button></>}
+        text="Your request is ready for coordinator review, privacy-aware follow-up, and the next step into care."
+        actions={<><button className="primary-button" onClick={() => navigate('login')}>Patient account login <ArrowRight size={18} /></button><button className="secondary-button" onClick={() => navigate('support')}>Submit another request</button></>}
       />
       <section className="detail-grid">
         <InfoTile title="Coordinator review" text="The request is ready for triage by program fit, urgency, location, consent, and contact preference." />
         <InfoTile title="Privacy-aware follow-up" text="SMS and WhatsApp outreach should stay non-sensitive and route the user back to the portal." />
-        <InfoTile title="Next step" text="The user can create portal access, wait for a callback, or review program options." />
+        <InfoTile title="Next step" text="You can sign in to an account, wait for a callback, or review program options." />
       </section>
     </>
   );
@@ -307,7 +307,7 @@ function LoginPage({ login, session, navigate }) {
   const submit = (event) => {
     event.preventDefault();
     const account = demoAccounts.find((item) => item.email === email.trim() && item.password === password);
-    if (!account) { setError('Use one of the sample credentials shown on this page.'); return; }
+    if (!account) { setError('Use one of the account credentials shown on this page.'); return; }
     login(account);
   };
 
@@ -315,7 +315,7 @@ function LoginPage({ login, session, navigate }) {
 
   return (
     <section className="login-page">
-      <div className="login-copy"><p className="section-kicker">Portal access</p><h1>Sign in as a patient, clinician, or administrator.</h1><p>Use the sample accounts below to explore the patient, clinician, and administrator experiences.</p><div className="credential-list">{demoAccounts.map((account) => <button key={account.role} className={selected.role === account.role ? 'active' : ''} onClick={() => chooseAccount(account)}><strong>{account.label}</strong><span>{account.email}</span><small>{account.password}</small></button>)}</div></div>
+      <div className="login-copy"><p className="section-kicker">Account login</p><h1>Sign in as a patient, clinician, or administrator.</h1><p>Choose the account type that matches the workspace you want to access.</p><div className="credential-list">{demoAccounts.map((account) => <button key={account.role} className={selected.role === account.role ? 'active' : ''} onClick={() => chooseAccount(account)}><strong>{account.label}</strong><span>{account.email}</span><small>{account.password}</small></button>)}</div></div>
       <form className="login-form" onSubmit={submit}><Lock size={24} /><h2>Portal sign in</h2><label>Email<input value={email} onChange={(event) => setEmail(event.target.value)} /></label><label>Password<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} /></label>{error && <p className="form-error">{error}</p>}<button className="primary-button" type="submit">Sign in <ArrowRight size={18} /></button></form>
     </section>
   );
@@ -375,6 +375,7 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+
 
 
 
