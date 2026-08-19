@@ -53,16 +53,16 @@ const programs = [
   { code: 'PHP', title: 'PHP / Day Treatment', intensity: '25-30 hrs weekly', fit: 'High structure, step-down support, relapse risk monitoring.', detail: 'Daily treatment schedule, attendance capture, family coordination, and transition planning.' },
   { code: 'IOP', title: 'Intensive Outpatient', intensity: '3 hrs daily, 4 days', fit: 'Structured care while maintaining work, school, or family life.', detail: 'Group therapy, individual sessions, reminders, assignments, and recovery goals.' },
   { code: 'OP', title: 'Outpatient Program', intensity: 'Usually 90 min weekly', fit: 'Continued recovery support and longer-term accountability.', detail: 'Weekly check-ins, relapse prevention planning, resources, and aftercare support.' },
-  { code: 'VIOP', title: 'Virtual IOP', intensity: 'Mobile browser access', fit: 'Remote participation with a real program structure.', detail: 'Waiting room, readiness checks, secure links, group rosters, and low-bandwidth help.' }
+  { code: 'VIOP', title: 'Virtual IOP', intensity: 'Mobile browser access', fit: 'Structured care from a private place.', detail: 'Private session links, group access, and practical connection support.' }
 ];
 
 const publicTools = [
-  ['Confidential Intake', 'Capture needs, county, phone, consent, device access, preferred time, and M-Pesa payer details.', ClipboardCheck],
-  ['Care Matching', 'Route patients to PHP, IOP, OP, Virtual IOP, family support, or urgent follow-up.', Target],
-  ['Telehealth Access', 'Session links, waiting room, readiness checks, reconnect guidance, and attendance markers.', Video],
-  ['Recovery Tools', 'Mood, craving, sleep, goals, worksheets, journaling, relapse planning, and resources.', Activity],
-  ['Messaging', 'Consent-aware SMS and WhatsApp reminders that route back to secure portal views.', MessageCircle],
-  ['Payments', 'M-Pesa payment status, receipts, balances, deposits, and reconciliation workflows.', WalletCards]
+  ['Confidential Intake', 'A private first step for sharing needs, contact preferences, and payment details.', ClipboardCheck],
+  ['Care Matching', 'Clear guidance toward the level of care that fits the moment.', Target],
+  ['Telehealth Access', 'Simple access to secure sessions, groups, and care-team follow-up.', Video],
+  ['Recovery Tools', 'Daily support for cravings, goals, reflection, and relapse prevention.', Activity],
+  ['Messaging', 'Discreet reminders that keep private details inside the portal.', MessageCircle],
+  ['Payments', 'Clear balances, receipts, and M-Pesa payment updates.', WalletCards]
 ];
 
 const resourceLibrary = [
@@ -163,7 +163,7 @@ function App() {
 
       <footer className="site-footer">
         <div className="brand footer-brand"><span className="brand-mark"><HeartHandshake size={18} /></span><span>Harborlight</span></div>
-        <p>Mobile-first opioid rehabilitation, telehealth, recovery engagement, and M-Pesa workflows.</p>
+        <p>Private opioid rehabilitation, telehealth support, and M-Pesa-ready care access.</p>
         <span>Kenya / EAT</span>
       </footer>
     </div>
@@ -207,7 +207,7 @@ function HomePage({ navigate, session }) {
       <PageHero
         kicker="Kenya-ready recovery platform"
         title="Treatment access that feels structured, private, and alive."
-        text="Confidential opioid rehabilitation and outpatient support with telehealth access, recovery tools, care-team coordination, reminders, and M-Pesa-ready payment views."
+        text="Private opioid rehabilitation and outpatient support, with telehealth access, recovery guidance, care-team connection, and clear payment information."
         actions={<><button className="primary-button" onClick={() => navigate('login')}>{session ? 'Open dashboard' : 'Patient account login'} <ArrowRight size={18} /></button><button className="secondary-button" onClick={() => navigate('programs')}>Explore programs</button></>}
         visual={<EngagementPanel />}
       />
@@ -241,7 +241,7 @@ function EngagementPanel() {
 function ProgramsPage({ navigate }) {
   return (
     <>
-      <PageHero className="programs-hero-copy" kicker="Program pages" title="Choose the right level of care without guessing." text="Each program page explains structure, intensity, fit, support tools, and what the patient or family should expect next." actions={<button className="primary-button" onClick={() => navigate('support')}>Start intake <ArrowRight size={18} /></button>} />
+      <PageHero className="programs-hero-copy" kicker="Program pages" title="Find the level of care that fits today." text="Compare care options, schedules, and next steps in plain language." actions={<button className="primary-button" onClick={() => navigate('support')}>Start intake <ArrowRight size={18} /></button>} />
       <section className="program-page-grid">
         {programs.map((program) => <article className="program-detail" key={program.code}><span>{program.code}</span><h2>{program.title}</h2><b>{program.intensity}</b><p>{program.fit}</p><p>{program.detail}</p><button onClick={() => navigate('support')}>Discuss this option <ArrowRight size={16} /></button></article>)}
       </section>
@@ -252,10 +252,10 @@ function ProgramsPage({ navigate }) {
 function TelehealthPage({ navigate }) {
   return (
     <>
-      <PageHero kicker="Telehealth" title="A session experience designed for phones, groups, and real-world bandwidth." text="Patients get a readiness check and waiting room. Clinicians get roster, attendance, notes, risk context, and reconnection markers." actions={<button className="primary-button" onClick={() => navigate('login')}>Patient account login <ArrowRight size={18} /></button>} />
+      <PageHero kicker="Telehealth" title="Join care from wherever privacy is possible." text="Secure video sessions, group access, and practical support when the connection is not perfect." actions={<button className="primary-button" onClick={() => navigate('login')}>Patient account login <ArrowRight size={18} /></button>} />
       <section className="console-layout">
-        <div className="console-panel expanded"><div className="console-header"><Video size={18} /> Virtual IOP session <span>18:00 EAT</span></div><div className="readiness-grid"><div><Mic size={18} /><strong>Mic</strong><span>Ready</span></div><div><Video size={18} /><strong>Camera</strong><span>Ready</span></div><div><Wifi size={18} /><strong>Connection</strong><span>Limited but stable</span></div><div><Users size={18} /><strong>Roster</strong><span>7 expected</span></div></div><div className="waiting-room"><strong>Waiting room</strong><p>3 participants waiting. 1 participant needs a reconnect prompt.</p><button onClick={() => navigate('login')}>Admit selected</button></div></div>
-        <div className="support-stack"><InfoTile title="Before session" text="Battery, privacy, data bundle, browser readiness, headset, and emergency disclaimer." /><InfoTile title="During session" text="Attendance, late entry, technical issue, left early, and care-team follow-up markers." /><InfoTile title="After session" text="Progress notes, group notes, assignments, receipts, and next-session reminders." /></div>
+        <div className="console-panel expanded"><div className="console-header"><Video size={18} /> Virtual IOP session <span>18:00 EAT</span></div><div className="readiness-grid"><div><Mic size={18} /><strong>Mic</strong><span>Ready</span></div><div><Video size={18} /><strong>Camera</strong><span>Ready</span></div><div><Wifi size={18} /><strong>Connection</strong><span>Limited but stable</span></div><div><Users size={18} /><strong>Roster</strong><span>7 expected</span></div></div><div className="waiting-room"><strong>Waiting room</strong><p>Three participants are ready to join. One person may need connection support.</p><button onClick={() => navigate('login')}>Admit selected</button></div></div>
+        <div className="support-stack"><InfoTile title="Before session" text="Prepare your space, device, connection, and privacy before the call." /><InfoTile title="During session" text="Keep the session organized even when someone joins late or reconnects." /><InfoTile title="After session" text="Leave with notes, next steps, and reminders for continued care." /></div>
       </section>
     </>
   );
@@ -264,7 +264,7 @@ function TelehealthPage({ navigate }) {
 function ResourcesPage({ navigate }) {
   return (
     <>
-      <PageHero kicker="Recovery resources" title="Practical content keeps the portal useful between appointments." text="Patients and families need tools they can use on hard days, not only explanations of the service." actions={<button className="primary-button" onClick={() => navigate('login')}>Try patient dashboard <ArrowRight size={18} /></button>} />
+      <PageHero kicker="Recovery resources" title="Support that still helps between appointments." text="Short guides for cravings, family support, privacy, low bandwidth, and aftercare." actions={<button className="primary-button" onClick={() => navigate('login')}>Patient account login <ArrowRight size={18} /></button>} />
       <section className="resource-grid">{resourceLibrary.map(([title, text]) => <article key={title} className="resource-card"><BookOpen size={22} /><h3>{title}</h3><p>{text}</p><button onClick={() => navigate('login')}>Save resource</button></article>)}</section>
     </>
   );
@@ -273,7 +273,7 @@ function ResourcesPage({ navigate }) {
 function SupportPage({ navigate }) {
   return (
     <>
-      <PageHero kicker="Support and intake" title="Make asking for help feel clear, private, and immediate." text="This support page captures the next steps for patients, families, working adults, and people leaving higher levels of care." actions={<button className="primary-button" onClick={() => navigate('login')}>Continue to portal <ArrowRight size={18} /></button>} />
+      <PageHero kicker="Support and intake" title="Ask for help with privacy and clarity." text="Share what is happening and choose how you would like to be contacted." actions={<button className="primary-button" onClick={() => navigate('login')}>Continue to portal <ArrowRight size={18} /></button>} />
       <section className="intake-page"><div><h2>Confidential request</h2><p>Share a few details so a care coordinator can understand your needs, contact preferences, and the level of support that may fit best.</p></div><form onSubmit={(event) => { event.preventDefault(); navigate('intake-sent'); }}><label>Full name<input placeholder="Your name" /></label><label>Mobile number<input placeholder="+2547XXXXXXXX" /></label><label>Program interest<select defaultValue=""><option value="" disabled>Select option</option><option>PHP / Day Treatment</option><option>IOP</option><option>Outpatient</option><option>Virtual IOP</option><option>Family support</option></select></label><label>What would help today?<textarea placeholder="Share only what you are comfortable sharing." /></label><button className="primary-button">Submit request <ArrowRight size={18} /></button></form></section>
     </>
   );
@@ -290,7 +290,7 @@ function IntakeSentPage({ navigate }) {
       />
       <section className="detail-grid">
         <InfoTile title="Coordinator review" text="The request is ready for triage by program fit, urgency, location, consent, and contact preference." />
-        <InfoTile title="Privacy-aware follow-up" text="SMS and WhatsApp outreach should stay non-sensitive and route the user back to the portal." />
+        <InfoTile title="Privacy-aware follow-up" text="Follow-up messages stay discreet and direct you back to the portal." />
         <InfoTile title="Next step" text="You can sign in to an account, wait for a callback, or review program options." />
       </section>
     </>
@@ -307,7 +307,7 @@ function LoginPage({ login, session, navigate }) {
   const submit = (event) => {
     event.preventDefault();
     const account = demoAccounts.find((item) => item.email === email.trim() && item.password === password);
-    if (!account) { setError('Use one of the account credentials shown on this page.'); return; }
+    if (!account) { setError('Choose one of the account credentials listed here.'); return; }
     login(account);
   };
 
@@ -336,8 +336,8 @@ function PortalPage({ session, navigate, logout }) {
 
 function dashboardTitle(role) {
   if (role === 'patient') return 'Your care plan, sessions, and recovery tools.';
-  if (role === 'clinician') return 'Clinical visibility without hunting through tabs.';
-  return 'Operations, consent, scheduling, and payment oversight.';
+  if (role === 'clinician') return 'Clinical work organized around the next decision.';
+  return 'Care operations with clear schedules, consent, and payments.';
 }
 
 function dashboardActionMode(action) {
@@ -347,7 +347,7 @@ function dashboardActionMode(action) {
 }
 
 function DashboardCards({ cards, role, setMode }) {
-  return <><div className="dashboard-grid">{cards.map(([title, text, action, Icon]) => <article className="dashboard-card" key={title}><Icon size={24} /><h3>{title}</h3><p>{text}</p><button onClick={() => setMode(dashboardActionMode(action))}>{action}</button></article>)}</div><div className="insight-panel"><h2>{role === 'patient' ? "Today's recovery focus" : 'Outcome signals'}</h2><div className="insight-grid"><InfoTile title="Engagement" text="Session attendance, check-ins, tasks, and message response help care teams intervene earlier." /><InfoTile title="Safety" text="Visible disclaimers, consent-aware messaging, risk flags, and follow-up queues reduce blind spots." /><InfoTile title="Momentum" text="Goals, worksheets, receipts, reminders, and next steps make the portal worth returning to." /></div></div></>;
+  return <><div className="dashboard-grid">{cards.map(([title, text, action, Icon]) => <article className="dashboard-card" key={title}><Icon size={24} /><h3>{title}</h3><p>{text}</p><button onClick={() => setMode(dashboardActionMode(action))}>{action}</button></article>)}</div><div className="insight-panel"><h2>{role === 'patient' ? "Today's recovery focus" : 'Outcome signals'}</h2><div className="insight-grid"><InfoTile title="Engagement" text="Attendance, check-ins, and replies help the care team notice changes earlier." /><InfoTile title="Safety" text="Consent, safety prompts, and follow-up lists keep care visible." /><InfoTile title="Momentum" text="Goals, reminders, and next steps give every visit a purpose." /></div></div></>;
 }
 
 function TasksPanel({ role }) {
@@ -375,6 +375,8 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+
+
 
 
 
