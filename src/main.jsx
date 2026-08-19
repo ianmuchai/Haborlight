@@ -95,6 +95,8 @@ const adminCards = [
   ['Audit and consent', 'Messaging, family access, payment permissions', 'Review logs', ShieldCheck, 'audit']
 ];
 
+const roleStartModes = { patient: 'overview', clinician: 'session', admin: 'intake' };
+
 const pageIds = [
   ...routes.map((route) => route.id),
   'portal',
@@ -139,6 +141,18 @@ function App() {
     navigate(session ? 'portal' : 'login');
   };
 
+  const enterRole = (role) => {
+    localStorage.setItem('harborlight-preferred-role', role);
+    setPortalMode(roleStartModes[role] || 'overview');
+    if (session?.role === role) {
+      navigate('portal');
+      return;
+    }
+    localStorage.removeItem('harborlight-session');
+    setSession(null);
+    navigate('login');
+  };
+
   const login = (account) => {
     localStorage.setItem('harborlight-session', JSON.stringify(account));
     setSession(account);
@@ -173,7 +187,7 @@ function App() {
       {menuOpen && <MobileMenu page={activeRoute} navigate={navigate} close={() => setMenuOpen(false)} />}
 
       <main className="page-shell">
-        {page === 'home' && <HomePage navigate={navigate} session={session} openPortalMode={openPortalMode} />}
+        {page === 'home' && <HomePage navigate={navigate} session={session} openPortalMode={openPortalMode} enterRole={enterRole} />}
         {page === 'programs' && <ProgramsPage navigate={navigate} />}
         {page.startsWith('program-') && <ProgramDetailPage program={programs.find((program) => program.slug === page)} navigate={navigate} />}
         {page === 'telehealth' && <TelehealthPage navigate={navigate} openPortalMode={openPortalMode} />}
@@ -225,7 +239,7 @@ function PageHero({ kicker, title, text, actions, visual, className = '' }) {
   );
 }
 
-function HomePage({ navigate, session, openPortalMode }) {
+function HomePage({ navigate, session, openPortalMode, enterRole }) {
   return (
     <>
       <PageHero
@@ -236,7 +250,7 @@ function HomePage({ navigate, session, openPortalMode }) {
         actions={<><button className="primary-button portal-primary" onClick={() => navigate(session ? 'portal' : 'login')}>{session ? 'Open dashboard' : 'Enter main system'} <ArrowRight size={18} /></button><button className="secondary-button" onClick={() => navigate('support')}>Request support</button></>}
         visual={<EngagementPanel />}
       />
-      <HomeLoginGateway navigate={navigate} session={session} />
+      <HomeLoginGateway enterRole={enterRole} session={session} />
       <section className="feature-band">
         {publicTools.map(([title, text, Icon, target, action]) => <article className="feature-card" key={title}><Icon size={24} /><h3>{title}</h3><p>{text}</p><button onClick={() => target.startsWith('portal:') ? openPortalMode(target.replace('portal:', '')) : navigate(target)}>{action} <ArrowRight size={16} /></button></article>)}
       </section>
@@ -253,12 +267,8 @@ function HomePage({ navigate, session, openPortalMode }) {
 }
 
 
-function HomeLoginGateway({ navigate, session }) {
-  const action = session ? 'Open dashboard' : 'Sign in';
-  const enterAs = (role) => {
-    localStorage.setItem('harborlight-preferred-role', role);
-    navigate(session ? 'portal' : 'login');
-  };
+function HomeLoginGateway({ enterRole, session }) {
+  const actionFor = (role, label) => session?.role === role ? `Open ${label}` : `Sign in as ${label}`;
   return (
     <section className="portal-gateway" aria-label="Main system access">
       <div>
@@ -270,19 +280,19 @@ function HomeLoginGateway({ navigate, session }) {
           <Users size={22} />
           <h3>Patient portal</h3>
           <p>Join sessions, complete check-ins, review recovery tasks, message the care team, and view payments.</p>
-          <button onClick={() => enterAs('patient')}>{action} <ArrowRight size={16} /></button>
+          <button onClick={() => enterRole('patient')}>{actionFor('patient', 'patient portal')} <ArrowRight size={16} /></button>
         </article>
         <article>
           <Stethoscope size={22} />
           <h3>Clinician workspace</h3>
           <p>Manage waiting rooms, risk reviews, notes, follow-up tasks, and private patient communication.</p>
-          <button onClick={() => enterAs('clinician')}>{action} <ArrowRight size={16} /></button>
+          <button onClick={() => enterRole('clinician')}>{actionFor('clinician', 'clinician workspace')} <ArrowRight size={16} /></button>
         </article>
         <article>
           <ShieldCheck size={22} />
           <h3>Admin console</h3>
           <p>Review intake, scheduling, consent, receipts, and operational readiness across the care program.</p>
-          <button onClick={() => enterAs('admin')}>{action} <ArrowRight size={16} /></button>
+          <button onClick={() => enterRole('admin')}>{actionFor('admin', 'admin console')} <ArrowRight size={16} /></button>
         </article>
       </div>
     </section>
@@ -530,6 +540,9 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+
+
+
 
 
 
