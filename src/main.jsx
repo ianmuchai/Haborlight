@@ -97,7 +97,7 @@ const adminCards = [
 
 function getInitialPage() {
   const page = window.location.hash.replace('#/', '') || 'home';
-  return routes.some((route) => route.id === page) ? page : 'home';
+  return [...routes.map((route) => route.id), 'portal', 'intake-sent'].includes(page) ? page : 'home';
 }
 
 function App() {
@@ -158,6 +158,7 @@ function App() {
         {page === 'support' && <SupportPage navigate={navigate} />}
         {page === 'login' && <LoginPage login={login} session={session} navigate={navigate} />}
         {page === 'portal' && <PortalPage session={session} navigate={navigate} logout={logout} />}
+        {page === 'intake-sent' && <IntakeSentPage navigate={navigate} />}
       </main>
 
       <footer className="site-footer">
@@ -253,7 +254,7 @@ function TelehealthPage({ navigate }) {
     <>
       <PageHero kicker="Telehealth" title="A session experience designed for phones, groups, and real-world bandwidth." text="Patients get a readiness check and waiting room. Clinicians get roster, attendance, notes, risk context, and reconnection markers." actions={<button className="primary-button" onClick={() => navigate('login')}>Open demo console <ArrowRight size={18} /></button>} />
       <section className="console-layout">
-        <div className="console-panel expanded"><div className="console-header"><Video size={18} /> Virtual IOP session <span>18:00 EAT</span></div><div className="readiness-grid"><div><Mic size={18} /><strong>Mic</strong><span>Ready</span></div><div><Video size={18} /><strong>Camera</strong><span>Ready</span></div><div><Wifi size={18} /><strong>Connection</strong><span>Limited but stable</span></div><div><Users size={18} /><strong>Roster</strong><span>7 expected</span></div></div><div className="waiting-room"><strong>Waiting room</strong><p>3 participants waiting. 1 participant needs a reconnect prompt.</p><button>Admit selected</button></div></div>
+        <div className="console-panel expanded"><div className="console-header"><Video size={18} /> Virtual IOP session <span>18:00 EAT</span></div><div className="readiness-grid"><div><Mic size={18} /><strong>Mic</strong><span>Ready</span></div><div><Video size={18} /><strong>Camera</strong><span>Ready</span></div><div><Wifi size={18} /><strong>Connection</strong><span>Limited but stable</span></div><div><Users size={18} /><strong>Roster</strong><span>7 expected</span></div></div><div className="waiting-room"><strong>Waiting room</strong><p>3 participants waiting. 1 participant needs a reconnect prompt.</p><button onClick={() => navigate('login')}>Admit selected</button></div></div>
         <div className="support-stack"><InfoTile title="Before session" text="Battery, privacy, data bundle, browser readiness, headset, and emergency disclaimer." /><InfoTile title="During session" text="Attendance, late entry, technical issue, left early, and care-team follow-up markers." /><InfoTile title="After session" text="Progress notes, group notes, assignments, receipts, and next-session reminders." /></div>
       </section>
     </>
@@ -264,7 +265,7 @@ function ResourcesPage({ navigate }) {
   return (
     <>
       <PageHero kicker="Recovery resources" title="Practical content keeps the portal useful between appointments." text="Patients and families need tools they can use on hard days, not only explanations of the service." actions={<button className="primary-button" onClick={() => navigate('login')}>Try patient dashboard <ArrowRight size={18} /></button>} />
-      <section className="resource-grid">{resourceLibrary.map(([title, text]) => <article key={title} className="resource-card"><BookOpen size={22} /><h3>{title}</h3><p>{text}</p><button>Save resource</button></article>)}</section>
+      <section className="resource-grid">{resourceLibrary.map(([title, text]) => <article key={title} className="resource-card"><BookOpen size={22} /><h3>{title}</h3><p>{text}</p><button onClick={() => navigate('login')}>Save resource</button></article>)}</section>
     </>
   );
 }
@@ -273,7 +274,25 @@ function SupportPage({ navigate }) {
   return (
     <>
       <PageHero kicker="Support and intake" title="Make asking for help feel clear, private, and immediate." text="This support page captures the next steps for patients, families, working adults, and people leaving higher levels of care." actions={<button className="primary-button" onClick={() => navigate('login')}>Continue to portal <ArrowRight size={18} /></button>} />
-      <section className="intake-page"><div><h2>Confidential request</h2><p>This static prototype shows the fields needed for routing. A production build should connect this to a secure backend, consent ledger, and staff queue.</p></div><form onSubmit={(event) => event.preventDefault()}><label>Full name<input placeholder="Your name" /></label><label>Mobile number<input placeholder="+2547XXXXXXXX" /></label><label>Program interest<select defaultValue=""><option value="" disabled>Select option</option><option>PHP / Day Treatment</option><option>IOP</option><option>Outpatient</option><option>Virtual IOP</option><option>Family support</option></select></label><label>What would help today?<textarea placeholder="Share only what you are comfortable sharing." /></label><button className="primary-button">Submit request <ArrowRight size={18} /></button></form></section>
+      <section className="intake-page"><div><h2>Confidential request</h2><p>This static prototype shows the fields needed for routing. A production build should connect this to a secure backend, consent ledger, and staff queue.</p></div><form onSubmit={(event) => { event.preventDefault(); navigate('intake-sent'); }}><label>Full name<input placeholder="Your name" /></label><label>Mobile number<input placeholder="+2547XXXXXXXX" /></label><label>Program interest<select defaultValue=""><option value="" disabled>Select option</option><option>PHP / Day Treatment</option><option>IOP</option><option>Outpatient</option><option>Virtual IOP</option><option>Family support</option></select></label><label>What would help today?<textarea placeholder="Share only what you are comfortable sharing." /></label><button className="primary-button">Submit request <ArrowRight size={18} /></button></form></section>
+    </>
+  );
+}
+
+function IntakeSentPage({ navigate }) {
+  return (
+    <>
+      <PageHero
+        kicker="Request submitted"
+        title="Your confidential request has been received."
+        text="This page confirms what the user expects after submitting intake: coordinator review, privacy-aware follow-up, and a path into portal access."
+        actions={<><button className="primary-button" onClick={() => navigate('login')}>Create portal access <ArrowRight size={18} /></button><button className="secondary-button" onClick={() => navigate('support')}>Submit another request</button></>}
+      />
+      <section className="detail-grid">
+        <InfoTile title="Coordinator review" text="The request is ready for triage by program fit, urgency, location, consent, and contact preference." />
+        <InfoTile title="Privacy-aware follow-up" text="SMS and WhatsApp outreach should stay non-sensitive and route the user back to the portal." />
+        <InfoTile title="Next step" text="The user can create portal access, wait for a callback, or review program options." />
+      </section>
     </>
   );
 }
@@ -310,7 +329,7 @@ function PortalPage({ session, navigate, logout }) {
   return (
     <section className="dashboard-page">
       <aside className="dashboard-sidebar"><div className="brand"><span className="brand-mark"><HeartHandshake size={18} /></span><span>Portal</span></div><div className="user-chip"><strong>{session.name}</strong><span>{session.label} workspace</span></div><button className={mode === 'overview' ? 'active' : ''} onClick={() => setMode('overview')}><LayoutDashboard size={18} /> Overview</button><button className={mode === 'tasks' ? 'active' : ''} onClick={() => setMode('tasks')}><ClipboardCheck size={18} /> Tasks</button><button className={mode === 'messages' ? 'active' : ''} onClick={() => setMode('messages')}><MessageCircle size={18} /> Messages</button><button className={mode === 'payments' ? 'active' : ''} onClick={() => setMode('payments')}><WalletCards size={18} /> Payments</button><button onClick={logout}><LogOut size={18} /> Sign out</button></aside>
-      <div className="dashboard-main"><div className="dashboard-heading"><div><p className="section-kicker">{session.label} dashboard</p><h1>{dashboardTitle(session.role)}</h1></div><button className="secondary-button" onClick={() => navigate('home')}>Public site</button></div>{mode === 'overview' && <DashboardCards cards={cards} role={session.role} />}{mode === 'tasks' && <TasksPanel role={session.role} />}{mode === 'messages' && <MessagesPanel />}{mode === 'payments' && <PaymentsPanel />}</div>
+      <div className="dashboard-main"><div className="dashboard-heading"><div><p className="section-kicker">{session.label} dashboard</p><h1>{dashboardTitle(session.role)}</h1></div><button className="secondary-button" onClick={() => navigate('home')}>Public site</button></div>{mode === 'overview' && <DashboardCards cards={cards} role={session.role} setMode={setMode} />}{mode === 'tasks' && <TasksPanel role={session.role} />}{mode === 'messages' && <MessagesPanel />}{mode === 'payments' && <PaymentsPanel />}</div>
     </section>
   );
 }
@@ -321,8 +340,14 @@ function dashboardTitle(role) {
   return 'Operations, consent, scheduling, and payment oversight.';
 }
 
-function DashboardCards({ cards, role }) {
-  return <><div className="dashboard-grid">{cards.map(([title, text, action, Icon]) => <article className="dashboard-card" key={title}><Icon size={24} /><h3>{title}</h3><p>{text}</p><button>{action}</button></article>)}</div><div className="insight-panel"><h2>{role === 'patient' ? "Today's recovery focus" : 'Outcome signals'}</h2><div className="insight-grid"><InfoTile title="Engagement" text="Session attendance, check-ins, tasks, and message response help care teams intervene earlier." /><InfoTile title="Safety" text="Visible disclaimers, consent-aware messaging, risk flags, and follow-up queues reduce blind spots." /><InfoTile title="Momentum" text="Goals, worksheets, receipts, reminders, and next steps make the portal worth returning to." /></div></div></>;
+function dashboardActionMode(action) {
+  if (action.includes('payment') || action.includes('queue')) return 'payments';
+  if (action.includes('tasks') || action.includes('Assign') || action.includes('check-in') || action.includes('notes') || action.includes('context') || action.includes('calendar') || action.includes('logs')) return 'tasks';
+  return 'overview';
+}
+
+function DashboardCards({ cards, role, setMode }) {
+  return <><div className="dashboard-grid">{cards.map(([title, text, action, Icon]) => <article className="dashboard-card" key={title}><Icon size={24} /><h3>{title}</h3><p>{text}</p><button onClick={() => setMode(dashboardActionMode(action))}>{action}</button></article>)}</div><div className="insight-panel"><h2>{role === 'patient' ? "Today's recovery focus" : 'Outcome signals'}</h2><div className="insight-grid"><InfoTile title="Engagement" text="Session attendance, check-ins, tasks, and message response help care teams intervene earlier." /><InfoTile title="Safety" text="Visible disclaimers, consent-aware messaging, risk flags, and follow-up queues reduce blind spots." /><InfoTile title="Momentum" text="Goals, worksheets, receipts, reminders, and next steps make the portal worth returning to." /></div></div></>;
 }
 
 function TasksPanel({ role }) {
@@ -350,4 +375,5 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+
 
