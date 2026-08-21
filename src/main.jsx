@@ -513,9 +513,10 @@ function PatientRecordsPanel({ setMode }) {
   const selected = onboardedPatients.find((patient) => patient.id === selectedId) || onboardedPatients[0];
   return (
     <section className="patient-records-panel">
-      <div className="patient-roster">
+      <div className="patient-roster compact-selector">
         <div className="panel-title"><p className="section-kicker">Onboarded patients</p><h2>Patient records and care files</h2></div>
-        {onboardedPatients.map((patient) => <button key={patient.id} className={selected.id === patient.id ? 'active' : ''} onClick={() => setSelectedId(patient.id)}><strong>{patient.name}</strong><span>{patient.program} / {patient.status}</span><small>{patient.risk} risk</small></button>)}
+        <label>Choose patient<select value={selectedId} onChange={(event) => setSelectedId(event.target.value)}>{onboardedPatients.map((patient) => <option key={patient.id} value={patient.id}>{patient.name} / {patient.program} / {patient.status}</option>)}</select></label>
+        <div className="selected-patient-mini"><strong>{selected.name}</strong><span>{selected.id}</span><small>{selected.lastContact}</small></div>
       </div>
       <div className="patient-file-workspace">
         <div className="patient-summary-card">
@@ -527,8 +528,8 @@ function PatientRecordsPanel({ setMode }) {
           <InfoTile title="Next session" text={selected.nextSession} />
           <InfoTile title="Consent" text="Family access and care-team permissions are active for review." />
         </div>
-        <div className="document-grid">
-          {selected.documents.map((document) => <article key={document}><FileText size={18} /><div><strong>{document}</strong><span>Updated in patient file</span></div><button>Edit</button></article>)}
+        <div className="document-editor-grid">
+          {selected.documents.map((document) => <DocumentEditCard key={`${selected.id}-${document}`} document={document} patient={selected} />)}
         </div>
         <div className="form-panel enhanced-form patient-edit-form">
           <div><p className="section-kicker">Editable file note</p><h2>Care-team update</h2></div>
@@ -538,6 +539,17 @@ function PatientRecordsPanel({ setMode }) {
         </div>
       </div>
     </section>
+  );
+}
+
+function DocumentEditCard({ document, patient }) {
+  return (
+    <article className="document-edit-card">
+      <div className="document-edit-header"><FileText size={18} /><div><strong>{document}</strong><span>Updated in patient file</span></div></div>
+      <div className="form-grid compact"><label>Status<select defaultValue="Updated"><option>Updated</option><option>Needs review</option><option>Pending signature</option><option>Archived</option></select></label><label>Owner<select defaultValue="Clinician"><option>Clinician</option><option>Care coordinator</option><option>Administrator</option></select></label></div>
+      <label>File note<textarea defaultValue={`${document} for ${patient.name}: review, update, and save any clinical or administrative changes here.`} /></label>
+      <div className="quick-actions"><button><Check size={16} /> Save changes</button></div>
+    </article>
   );
 }
 function SessionPanel({ role, setMode }) {
@@ -598,6 +610,7 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+
 
 
 

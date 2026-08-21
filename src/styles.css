@@ -682,3 +682,75 @@ h3 {
   .document-grid article { grid-template-columns: 22px 1fr; }
   .document-grid button { grid-column: 1 / -1; width: 100%; min-height: 42px; }
 }
+
+.compact-selector {
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--white);
+  box-shadow: var(--shadow);
+}
+.compact-selector label { margin-top: 8px; }
+.selected-patient-mini {
+  padding: 14px;
+  border-radius: 8px;
+  background: var(--wash);
+  display: grid;
+  gap: 3px;
+}
+.selected-patient-mini span,
+.selected-patient-mini small {
+  color: var(--muted);
+  font-size: 13px;
+}
+.record-tags {
+  align-content: start;
+  max-width: 260px;
+}
+.record-tags em {
+  min-width: 0;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1;
+}
+.document-editor-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.document-edit-card {
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  display: grid;
+  gap: 14px;
+  background: var(--white);
+  box-shadow: var(--shadow);
+}
+.document-edit-header {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: 10px;
+  align-items: center;
+}
+.document-edit-header svg { color: var(--coral); }
+.document-edit-header span {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.form-grid.compact { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.document-edit-card textarea { min-height: 90px; }
+
+@media (max-width: 1180px) {
+  .document-editor-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 820px) {
+  .record-tags { max-width: none; justify-content: flex-start; }
+  .record-tags em { white-space: normal; line-height: 1.2; }
+  .form-grid.compact { grid-template-columns: 1fr; }
+}
