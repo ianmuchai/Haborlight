@@ -517,8 +517,10 @@ function PatientRecordsPanel({ setMode }) {
         <div className="panel-title"><p className="section-kicker">Onboarded patients</p><h2>Patient records and care files</h2></div>
         <label>Choose patient<select value={selectedId} onChange={(event) => setSelectedId(event.target.value)}>{onboardedPatients.map((patient) => <option key={patient.id} value={patient.id}>{patient.name} / {patient.program} / {patient.status}</option>)}</select></label>
         <div className="selected-patient-mini"><strong>{selected.name}</strong><span>{selected.id}</span><small>{selected.lastContact}</small></div>
+        <button className="secondary-action" onClick={() => setShowNewPatient((current) => !current)}>{showNewPatient ? 'Close patient form' : 'Add new patient'}</button>
       </div>
       <div className="patient-file-workspace">
+        {showNewPatient && <NewPatientForm />}
         <div className="patient-summary-card">
           <div><span>{selected.id}</span><h3>{selected.name}</h3><p>{selected.summary}</p></div>
           <div className="record-tags"><em>{selected.program}</em><em>{selected.status}</em><em>{selected.risk} risk</em></div>
@@ -542,6 +544,18 @@ function PatientRecordsPanel({ setMode }) {
   );
 }
 
+
+function NewPatientForm() {
+  return (
+    <div className="form-panel enhanced-form new-patient-form">
+      <div><p className="section-kicker">New patient</p><h2>Add patient and initial records</h2></div>
+      <div className="form-grid"><label>Full name<input placeholder="Patient full name" /></label><label>Phone number<input placeholder="+2547XXXXXXXX" /></label><label>Program<select defaultValue=""><option value="" disabled>Select program</option><option>PHP / Day Treatment</option><option>IOP</option><option>OP</option><option>Virtual IOP</option></select></label><label>Risk level<select defaultValue="Moderate"><option>Low</option><option>Moderate</option><option>Elevated</option><option>High</option></select></label><label>Consent status<select defaultValue="Pending"><option>Pending</option><option>Patient consent active</option><option>Family consent active</option><option>Restricted access</option></select></label><label>Next appointment<input type="datetime-local" /></label></div>
+      <label>Initial clinical status<textarea placeholder="Current presentation, opioid use history, cravings, withdrawal concerns, medication notes, safety concerns, and immediate support plan." /></label>
+      <label>Records to create<textarea placeholder="Intake assessment, consent form, recovery plan, medication note, referral letter, payment record, or other files needed." /></label>
+      <div className="quick-actions"><button><FileText size={16} /> Create patient file</button><button><Check size={16} /> Save status note</button></div>
+    </div>
+  );
+}
 function DocumentEditCard({ document, patient }) {
   return (
     <article className="document-edit-card">
@@ -610,6 +624,7 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+
 
 
 

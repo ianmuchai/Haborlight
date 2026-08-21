@@ -754,3 +754,19 @@ h3 {
   .record-tags em { white-space: normal; line-height: 1.2; }
   .form-grid.compact { grid-template-columns: 1fr; }
 }
+
+.secondary-action {
+  min-height: 42px;
+  padding: 0 13px;
+  border-radius: 8px;
+  background: var(--deep);
+  color: var(--white);
+  font-size: 13px;
+  font-weight: 800;
+}
+.new-patient-form {
+  border-color: rgba(223, 116, 93, .42);
+  background: #fffaf6;
+}
+.new-patient-form textarea { min-height: 96px; }
+.compact-selector .secondary-action { width: 100%; }
