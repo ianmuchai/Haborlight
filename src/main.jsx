@@ -537,7 +537,7 @@ function PatientRecordsPanel({ setMode }) {
           <div><p className="section-kicker">Editable file note</p><h2>Care-team update</h2></div>
           <div className="form-grid"><label>Program<select defaultValue={selected.program}><option>PHP / Day Treatment</option><option>IOP</option><option>OP</option><option>Virtual IOP</option></select></label><label>Risk level<select defaultValue={selected.risk}><option>Low</option><option>Moderate</option><option>Elevated</option><option>High</option></select></label></div>
           <label>Clinical update<textarea defaultValue={`${selected.summary} Review attendance, cravings, medication notes, and next contact plan.`} /></label>
-          <div className="quick-actions"><button onClick={() => setMode('notes')}><FileText size={16} /> Open full note</button><button onClick={() => setMode('messages')}><MessageCircle size={16} /> Message patient</button><button><Check size={16} /> Save file update</button></div>
+          <div className="quick-actions"><button onClick={() => setMode('notes')}><FileText size={16} /> Open full note</button><button onClick={() => setMode('messages')}><MessageCircle size={16} /> Message patient</button><ActionButton label="Save file update" doneLabel="File update saved" icon={Check} /></div>
         </div>
       </div>
     </section>
@@ -552,7 +552,7 @@ function NewPatientForm() {
       <div className="form-grid"><label>Full name<input placeholder="Patient full name" /></label><label>Phone number<input placeholder="+2547XXXXXXXX" /></label><label>Program<select defaultValue=""><option value="" disabled>Select program</option><option>PHP / Day Treatment</option><option>IOP</option><option>OP</option><option>Virtual IOP</option></select></label><label>Risk level<select defaultValue="Moderate"><option>Low</option><option>Moderate</option><option>Elevated</option><option>High</option></select></label><label>Consent status<select defaultValue="Pending"><option>Pending</option><option>Patient consent active</option><option>Family consent active</option><option>Restricted access</option></select></label><label>Next appointment<input type="datetime-local" /></label></div>
       <label>Initial clinical status<textarea placeholder="Current presentation, opioid use history, cravings, withdrawal concerns, medication notes, safety concerns, and immediate support plan." /></label>
       <label>Records to create<textarea placeholder="Intake assessment, consent form, recovery plan, medication note, referral letter, payment record, or other files needed." /></label>
-      <div className="quick-actions"><button><FileText size={16} /> Create patient file</button><button><Check size={16} /> Save status note</button></div>
+      <div className="quick-actions"><ActionButton label="Create patient file" doneLabel="Patient file created" icon={FileText} /><ActionButton label="Save status note" doneLabel="Status note saved" icon={Check} /></div>
     </div>
   );
 }
@@ -562,7 +562,7 @@ function DocumentEditCard({ document, patient }) {
       <div className="document-edit-header"><FileText size={18} /><div><strong>{document}</strong><span>Updated in patient file</span></div></div>
       <div className="form-grid compact"><label>Status<select defaultValue="Updated"><option>Updated</option><option>Needs review</option><option>Pending signature</option><option>Archived</option></select></label><label>Owner<select defaultValue="Clinician"><option>Clinician</option><option>Care coordinator</option><option>Administrator</option></select></label></div>
       <label>File note<textarea defaultValue={`${document} for ${patient.name}: review, update, and save any clinical or administrative changes here.`} /></label>
-      <div className="quick-actions"><button><Check size={16} /> Save changes</button></div>
+      <div className="quick-actions"><ActionButton label="Save changes" doneLabel="Changes saved" icon={Check} /></div>
     </article>
   );
 }
@@ -573,7 +573,7 @@ function SessionPanel({ role, setMode }) {
 }
 
 function CheckInPanel() {
-  return <div className="form-panel enhanced-form"><div><p className="section-kicker">Patient check-in</p><h2>Daily recovery check</h2></div><div className="form-grid"><label>Craving level<input type="range" min="0" max="10" defaultValue="4" /></label><label>Mood today<select defaultValue="steady"><option value="steady">Steady</option><option value="low">Low</option><option value="anxious">Anxious</option><option value="strong">Strong</option></select></label><label>Sleep quality<select defaultValue="fair"><option value="good">Good</option><option value="fair">Fair</option><option value="poor">Poor</option></select></label><label>Medication taken<select defaultValue="yes"><option value="yes">Yes</option><option value="no">No</option><option value="na">Not applicable</option></select></label></div><label>What changed today?<textarea placeholder="Sleep, triggers, wins, medication notes, or support needs." /></label><div className="quick-actions"><button><ShieldCheck size={16} /> Request support</button><button><Check size={16} /> Save check-in</button></div></div>;
+  return <div className="form-panel enhanced-form"><div><p className="section-kicker">Patient check-in</p><h2>Daily recovery check</h2></div><div className="form-grid"><label>Craving level<input type="range" min="0" max="10" defaultValue="4" /></label><label>Mood today<select defaultValue="steady"><option value="steady">Steady</option><option value="low">Low</option><option value="anxious">Anxious</option><option value="strong">Strong</option></select></label><label>Sleep quality<select defaultValue="fair"><option value="good">Good</option><option value="fair">Fair</option><option value="poor">Poor</option></select></label><label>Medication taken<select defaultValue="yes"><option value="yes">Yes</option><option value="no">No</option><option value="na">Not applicable</option></select></label></div><label>What changed today?<textarea placeholder="Sleep, triggers, wins, medication notes, or support needs." /></label><div className="quick-actions"><ActionButton label="Request support" doneLabel="Support requested" icon={ShieldCheck} /><ActionButton label="Save check-in" doneLabel="Check-in saved" icon={Check} /></div></div>;
 }
 
 function TasksPanel({ role }) {
@@ -586,7 +586,7 @@ function RiskPanel() {
 }
 
 function NotesPanel() {
-  return <div className="form-panel enhanced-form"><div><p className="section-kicker">Documentation</p><h2>Clinical note workspace</h2></div><div className="form-grid"><label>Note type<select defaultValue="progress"><option value="progress">Progress note</option><option value="group">Group note</option><option value="family">Family contact</option></select></label><label>Risk level<select defaultValue="moderate"><option value="low">Low</option><option value="moderate">Moderate</option><option value="high">High</option></select></label></div><label>Progress note<textarea defaultValue="Patient attended group, identified trigger pattern, and agreed to a follow-up check-in." /></label><label>Plan<textarea defaultValue="Review craving plan, confirm next session, and update recovery goals." /></label><div className="quick-actions"><button><FileText size={16} /> Save draft</button><button><Check size={16} /> Sign note</button></div></div>;
+  return <div className="form-panel enhanced-form"><div><p className="section-kicker">Documentation</p><h2>Clinical note workspace</h2></div><div className="form-grid"><label>Note type<select defaultValue="progress"><option value="progress">Progress note</option><option value="group">Group note</option><option value="family">Family contact</option></select></label><label>Risk level<select defaultValue="moderate"><option value="low">Low</option><option value="moderate">Moderate</option><option value="high">High</option></select></label></div><label>Progress note<textarea defaultValue="Patient attended group, identified trigger pattern, and agreed to a follow-up check-in." /></label><label>Plan<textarea defaultValue="Review craving plan, confirm next session, and update recovery goals." /></label><div className="quick-actions"><ActionButton label="Save draft" doneLabel="Draft saved" icon={FileText} /><ActionButton label="Sign note" doneLabel="Note signed" icon={Check} /></div></div>;
 }
 
 function MessagesPanel() {
@@ -602,7 +602,8 @@ function IntakeQueuePanel() {
 }
 
 function QueueColumn({ title, items }) {
-  return <article className="queue-column"><h3>{title}</h3>{items.map((item) => <button key={item}>{item}<ChevronRight size={15} /></button>)}</article>;
+  const [selected, setSelected] = useState('');
+  return <article className="queue-column"><h3>{title}</h3>{items.map((item) => <button key={item} className={selected === item ? 'active' : ''} onClick={() => setSelected(item)}>{item}<ChevronRight size={15} /></button>)}{selected && <p className="queue-selection">Selected: {selected}</p>}</article>;
 }
 
 function SchedulePanel() {
@@ -611,6 +612,10 @@ function SchedulePanel() {
 
 function AuditPanel() {
   return <div className="work-grid"><InfoTile title="Consent" text="Family access and care-team permissions are ready for review." /><InfoTile title="Messaging" text="Sensitive details stay in the portal while reminders stay discreet." /><InfoTile title="Payments" text="Receipt and reconciliation activity is visible for administrative review." /><InfoTile title="Access history" text="Role changes, portal access, and note updates can be reviewed before escalation." /><InfoTile title="Privacy checks" text="Discreet messaging and consent boundaries remain visible to administrators." /><InfoTile title="Readiness" text="Operational checks help teams prepare for pitch and care delivery discussions." /></div>;
+}
+function ActionButton({ label, doneLabel, icon: Icon }) {
+  const [done, setDone] = useState(false);
+  return <button type="button" className={done ? 'confirmed' : ''} onClick={() => setDone(true)}>{Icon && <Icon size={16} />} {done ? doneLabel : label}</button>;
 }
 function InfoTile({ title, text }) {
   return <article className="info-tile"><h3>{title}</h3><p>{text}</p></article>;
@@ -624,6 +629,7 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+
 
 
 

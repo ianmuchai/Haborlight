@@ -770,3 +770,19 @@ h3 {
 }
 .new-patient-form textarea { min-height: 96px; }
 .compact-selector .secondary-action { width: 100%; }
+
+.quick-actions button.confirmed,
+.queue-column button.active {
+  background: var(--green);
+  color: var(--white);
+  border-color: transparent;
+}
+.queue-selection {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--mist);
+  color: var(--deep);
+  font-size: 13px;
+  font-weight: 800;
+}
