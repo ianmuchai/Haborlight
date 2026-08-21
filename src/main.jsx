@@ -95,6 +95,12 @@ const adminCards = [
   ['Audit and consent', 'Messaging, family access, payment permissions', 'Review logs', ShieldCheck, 'audit']
 ];
 
+const onboardedPatients = [
+  { name: 'Amina Wanjiku', id: 'PT-1042', program: 'Virtual IOP', status: 'Active', risk: 'Moderate', lastContact: 'Today, 09:20', nextSession: '18:00 EAT', documents: ['Intake assessment', 'Consent form', 'Recovery plan', 'Medication note'], summary: 'Attending evening group, cravings improving, family consent active.' },
+  { name: 'Brian Otieno', id: 'PT-1078', program: 'IOP', status: 'Needs follow-up', risk: 'Elevated', lastContact: 'Yesterday, 17:45', nextSession: 'Tomorrow, 10:00', documents: ['Progress note', 'Risk review', 'Attendance record', 'Referral letter'], summary: 'Missed one check-in and needs a brief phone follow-up before group.' },
+  { name: 'Grace Njeri', id: 'PT-1091', program: 'OP', status: 'Stable', risk: 'Low', lastContact: 'Aug 20, 14:10', nextSession: 'Aug 24, 15:30', documents: ['Aftercare plan', 'Family session note', 'Payment receipt', 'Discharge checklist'], summary: 'Maintaining weekly outpatient support and aftercare milestones.' }
+];
+
 const roleStartModes = { patient: 'overview', clinician: 'session', admin: 'intake' };
 
 const pageIds = [
@@ -457,6 +463,7 @@ function PortalPage({ session, navigate, logout, mode, setMode }) {
         <div className="dashboard-heading"><div><p className="section-kicker">{session.label} dashboard</p><h1>{dashboardTitle(session.role)}</h1></div><button className="secondary-button" onClick={() => navigate('home')}>Public site</button></div>
         {mode === 'overview' && <DashboardCards cards={cards} role={session.role} setMode={setMode} />}
         {mode === 'session' && <SessionPanel role={session.role} setMode={setMode} />}
+        {mode === 'patients' && <PatientRecordsPanel setMode={setMode} />}
         {mode === 'checkin' && <CheckInPanel />}
         {mode === 'tasks' && <TasksPanel role={session.role} />}
         {mode === 'risk' && <RiskPanel />}
@@ -473,7 +480,7 @@ function PortalPage({ session, navigate, logout, mode, setMode }) {
 
 function portalTabsFor(role) {
   if (role === 'patient') return [['overview', 'Overview', LayoutDashboard], ['session', 'Session', Video], ['checkin', 'Check-in', Activity], ['tasks', 'Care plan', Target], ['messages', 'Messages', MessageCircle], ['payments', 'Payments', WalletCards]];
-  if (role === 'clinician') return [['overview', 'Overview', LayoutDashboard], ['session', 'Waiting room', Users], ['risk', 'Risk review', Activity], ['notes', 'Notes', FileText], ['tasks', 'Follow-up', ClipboardCheck], ['messages', 'Messages', MessageCircle]];
+  if (role === 'clinician') return [['overview', 'Overview', LayoutDashboard], ['patients', 'Patients', FileText], ['session', 'Waiting room', Users], ['risk', 'Risk review', Activity], ['notes', 'Notes', FileText], ['tasks', 'Follow-up', ClipboardCheck], ['messages', 'Messages', MessageCircle]];
   return [['overview', 'Overview', LayoutDashboard], ['intake', 'Intake', ClipboardCheck], ['schedule', 'Schedule', CalendarClock], ['payments', 'Payments', WalletCards], ['audit', 'Audit', ShieldCheck], ['messages', 'Messages', MessageCircle]];
 }
 
@@ -492,7 +499,7 @@ function RoleOverview({ role, setMode }) {
     return <section className="role-overview"><div><p className="section-kicker">Today</p><h2>Recovery plan at a glance</h2></div><div className="metric-grid"><MetricCard label="Engagement" value="82%" text="Sessions, check-ins, and worksheet activity this week." /><MetricCard label="Craving trend" value="4/10" text="Moderate, improving after two support contacts." /><MetricCard label="Next step" value="18:00" text="Virtual IOP waiting room opens before group." /></div><div className="quick-actions"><button onClick={() => setMode('session')}><Video size={16} /> Join session</button><button onClick={() => setMode('checkin')}><Activity size={16} /> Daily check-in</button><button onClick={() => setMode('messages')}><MessageCircle size={16} /> Message care team</button></div></section>;
   }
   if (role === 'clinician') {
-    return <section className="role-overview"><div><p className="section-kicker">Clinical priority</p><h2>Prepare the next care decision</h2></div><div className="metric-grid"><MetricCard label="Waiting room" value="3 ready" text="One participant is reconnecting before group starts." /><MetricCard label="Risk flags" value="2 open" text="Elevated cravings and one missed check-in need review." /><MetricCard label="Notes" value="3 due" text="Two progress notes and one group note remain pending." /></div><div className="quick-actions"><button onClick={() => setMode('session')}><Users size={16} /> Waiting room</button><button onClick={() => setMode('risk')}><Activity size={16} /> Risk review</button><button onClick={() => setMode('notes')}><FileText size={16} /> Notes</button></div></section>;
+    return <section className="role-overview"><div><p className="section-kicker">Clinical priority</p><h2>Prepare the next care decision</h2></div><div className="metric-grid"><MetricCard label="Waiting room" value="3 ready" text="One participant is reconnecting before group starts." /><MetricCard label="Risk flags" value="2 open" text="Elevated cravings and one missed check-in need review." /><MetricCard label="Notes" value="3 due" text="Two progress notes and one group note remain pending." /></div><div className="quick-actions"><button onClick={() => setMode('session')}><Users size={16} /> Waiting room</button><button onClick={() => setMode('patients')}><FileText size={16} /> Patient records</button><button onClick={() => setMode('risk')}><Activity size={16} /> Risk review</button><button onClick={() => setMode('notes')}><FileText size={16} /> Notes</button></div></section>;
   }
   return <section className="role-overview"><div><p className="section-kicker">Operations</p><h2>Program readiness and revenue visibility</h2></div><div className="metric-grid"><MetricCard label="New intake" value="8" text="Three priority callbacks need assignment today." /><MetricCard label="Capacity" value="76%" text="PHP, IOP, OP, and Virtual IOP scheduling utilization." /><MetricCard label="Payments" value="KES 18k" text="Pending receipts and reconciliation items for review." /></div><div className="quick-actions"><button onClick={() => setMode('intake')}><ClipboardCheck size={16} /> Intake queue</button><button onClick={() => setMode('schedule')}><CalendarClock size={16} /> Schedule</button><button onClick={() => setMode('payments')}><WalletCards size={16} /> Payments</button></div></section>;
 }
@@ -501,6 +508,38 @@ function MetricCard({ label, value, text }) {
   return <article className="metric-card"><span>{label}</span><strong>{value}</strong><p>{text}</p></article>;
 }
 
+function PatientRecordsPanel({ setMode }) {
+  const [selectedId, setSelectedId] = useState(onboardedPatients[0].id);
+  const selected = onboardedPatients.find((patient) => patient.id === selectedId) || onboardedPatients[0];
+  return (
+    <section className="patient-records-panel">
+      <div className="patient-roster">
+        <div className="panel-title"><p className="section-kicker">Onboarded patients</p><h2>Patient records and care files</h2></div>
+        {onboardedPatients.map((patient) => <button key={patient.id} className={selected.id === patient.id ? 'active' : ''} onClick={() => setSelectedId(patient.id)}><strong>{patient.name}</strong><span>{patient.program} / {patient.status}</span><small>{patient.risk} risk</small></button>)}
+      </div>
+      <div className="patient-file-workspace">
+        <div className="patient-summary-card">
+          <div><span>{selected.id}</span><h3>{selected.name}</h3><p>{selected.summary}</p></div>
+          <div className="record-tags"><em>{selected.program}</em><em>{selected.status}</em><em>{selected.risk} risk</em></div>
+        </div>
+        <div className="record-detail-grid">
+          <InfoTile title="Last contact" text={selected.lastContact} />
+          <InfoTile title="Next session" text={selected.nextSession} />
+          <InfoTile title="Consent" text="Family access and care-team permissions are active for review." />
+        </div>
+        <div className="document-grid">
+          {selected.documents.map((document) => <article key={document}><FileText size={18} /><div><strong>{document}</strong><span>Updated in patient file</span></div><button>Edit</button></article>)}
+        </div>
+        <div className="form-panel enhanced-form patient-edit-form">
+          <div><p className="section-kicker">Editable file note</p><h2>Care-team update</h2></div>
+          <div className="form-grid"><label>Program<select defaultValue={selected.program}><option>PHP / Day Treatment</option><option>IOP</option><option>OP</option><option>Virtual IOP</option></select></label><label>Risk level<select defaultValue={selected.risk}><option>Low</option><option>Moderate</option><option>Elevated</option><option>High</option></select></label></div>
+          <label>Clinical update<textarea defaultValue={`${selected.summary} Review attendance, cravings, medication notes, and next contact plan.`} /></label>
+          <div className="quick-actions"><button onClick={() => setMode('notes')}><FileText size={16} /> Open full note</button><button onClick={() => setMode('messages')}><MessageCircle size={16} /> Message patient</button><button><Check size={16} /> Save file update</button></div>
+        </div>
+      </div>
+    </section>
+  );
+}
 function SessionPanel({ role, setMode }) {
   if (role === 'admin') return <SchedulePanel />;
   const clinician = role === 'clinician';
@@ -559,6 +598,8 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+
+
 
 
 
